@@ -1,0 +1,872 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#0E1217">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="513X">
+<meta name="mobile-web-app-capable" content="yes">
+<link rel="apple-touch-icon" href="data:image/png;base64,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">
+<link rel="icon" href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAALQAAAC0CAIAAACyr5FlAAALDUlEQVR42u2de4xU1R3Hz33NnZk7d2bntS92ZxcRUWyrAcVYH0FDTVsxRtqgtqi1tUWo+EATKdFEa60UHyBEwDSIpK1RW1ojaWqVBmzV2iiiFYJ0pbAPdnd2Hjvve2fu3Hv7Bw1R5tx5LOwys/v9/Ld7z7mZe+5nzvn9fvfMDOP2tRAAaLAYAgA5AOQAkANADgA5AOQAkANADgA5AOQAAHIAyAEgB4AcAHIAyAEgB4AcAHIAyAEA5ACQA0AOADkA5ACQA0AOADkA5ACQAwDIASAHgBwAcgDIASAHgBwAcgDIASAHgBwAQA4AOQDkAJADQA4AOQDkAJADQA4AOQCAHAByAMgBxgN+DH2Sc6Zj4BoRz0dHamrP1PSjw9BiSilSrRzQYgoqwsKMqUk19xQBKTiFZaVUsVrjGlC3s0X5W1nzzAEzpk62wtbkGsyYZH6UjzwQcwDIASAHgBwAcgDIASAHgBxgssBjCMrg49nLXY55kjjLLsywC16OkznGICSnmznDGNCKPap2QCm8lVJ6VA1y1MZ3vNIL05vH3H3BocEPsvlqWnIMudApXiU7rnI75kmijWEoL+bz4V0ppZqzBXhukVda7HNdJIkMrYHIM17CTrPxl0h2QsgThBxUC08NJf84mjEsznlbQN4QCpT+3yRkYc/QO2m14qu6PSCvtzjDDZ8P767u0qbQzHGWKMyX7Ve7HVfKDg932pbIDV2Baz3OmrqcZ7dtnR68LeC65b8jCZ1iyPZoeqHHeU3JaRlCNncFLz14LKMbZc7fZeMf7/BRD22NpMbDjMaOOewss+/8jnWhwHVN0mk041S4UnbsnNlGnbcIISv6oqNFigEhG/+ExY0/IdCm7qDEUq7xSF57+FgcAWlj8DWn7YHWJuqhYU2/vz9KPXSrX77Geq5a3uy53GUv/b9ByJ290ZxhQo6G4baAbDWsO0azfxrNUg9tDAW8PKXfTLvwcLuX3iWcfD+jjt+FIFuxxCTko2z+rZTycS5/UC3Ei0bWMJwsG7LxV8j2HwfdZ4sCtWOrwM122PYrBerRlf3Rr7vsLQJX2uvpzsAPj4ycFGhv6Qo6WMo6dVAtPD44OtlS2et7hvekT3MAZRDySS6/J6XsTqvf9DiXN7tP5WzDheIvh0a3R9PDmn7SobRuHFAKB5TCtkj6henNC5voa8E0G28lR7xo3N0XfWVGCzW5ez0hvfaFqeXelqaLJLG0pWaaS49G8qY52eQ4be9skxzJa3vS6u6U8nZaOZEjXO12nOKZV/bHKrbJm+bK/ui1TSFq8Gm3iEmP80Yy95tY+ha/XHpoXWfgnxk1rOmEkPMdtlVt9PDlyeHEJ7lCY9c5xpW8aV54YOAMvoCwpqd0g5oohYt6+b6rBuLzZUen7eTx9/Hss6HATYfDAsM83x2kJj77cvmnh5MTcIEISMdOq8C5aWYohvlJrkLtLqMby3oj1FXhWx7nEr/8YFvTVx220qOqYS49GimO84JyxmaOm/2uO5vdsx02P8faWCZRNBK68R9V+yCr7kmrH+fyDWGGjWGe6vRTF4+X4xmlivTyH2l1y0hqGS08WtvpEy0WpscGRw9NVKn+DMhxk8/1xT+bBa5Z4M6xC8eDu73Z/LpwYmciV4dCCAwjc0yXTbjMZb89KFOzlf5C8dHBaqtSjw7GF7gdM+0nn4da7yKEvJdRN40kJ+x66y7mmCuJvz2r5dV4ZmV/LF22ojwxrOnwL6s69/lUKXzvcJhaBqWiGObS3shb57RzTOXGWcNY1huZyBGp05hjsc+14+wWan5fn+xXCvf0Ra/6bLCvUKyp4/GZspqWqwfiR/NFAjkIIZdI9k1dwYYwI1bUd6eU9zKqNqY4cc1Q4lOlQl66K6W8GE1P8HXVdbayyCtRnynUG36eW9Hi+dfsjo1dAVftjwA101zZFy3TwCDknrINGjvmGC0af0vn3kmr/1YK/YXiaNEQGNIm8BdL4hK/fIVsacCqNu/CnqGGmD9YQm71y3Od4sKeoXixttjg+7SC2BfPfLPP9eRwYlLJUTDJ64nsi9H0nrSimye9XcjhvHY4r70cz9zocz3XFRBoydulLtHNsak6iEyr5HyHbdv05ut7hqvvssDt+EFALt/mwbamN5K5iqtPI8mxM5HdmchWbPZKPOPn2Sc6/JTXxzCXuex/SZ6xzHbVQGzVwP+r6XaWkVk2JPLzJHGR1zWP9tSDEDJfdlzrcf65utfs4diNVYRWxwum8z8bLExI+au+Yo6tkbTVVqgOW73k26phRor63mx+80jqG4cG77CuVN5aaSY4wVOd/vaSJ7RWc9Jqi0ctk1yOvGlaFf4CPEfqkt/HMxvD9JLUpdXF0dc1SYu/XBIsz90tTVbT1ZTLVuofq7XDw7EV05Ygz60P+amHXo1n3qXt4uEYsqU7OGHln3qRw84ys+z0vTMjlZ5wnkHKrP8iU+EWrgsFqJPioKY/0B9bdjRCXWdniMKj03wNL8dD7d6lQXfFMTrOHQG31VutL1+/Hwn5tsXGT80042Wdvtnnus5io9CK3khSN3oLxdUWO4d/EnRfKTsaW44WgVvb6f/4Kx33tTa1lo25bvS5HplG3yapGOY747lN8iTcHLv73PY7gm4fX3lkFnmlu1s8dKELxTKTSrvA/6qTvqC8GE2f+HDN9mj6r7RliyFkc1dAHv8N9+OeCLQL/CPt3ofamv6eVt9OK+9n8335YrSocwxpFfh5krjE7yrzPngzlVOMiUveGELmOMU5TvHJTv++bH5PWtmvFA6p2oimp3RDJ0RimZCNv1gSv+tzXWYddZZ/qvxcV4C6Rai3UFw98KXZYkVf9P3zOkpN7bDxazp8P+2NNrYcJ8oVV7sdtW7g00zzsbJ7aD+c3THTIlIpZcfZraX/3BZN30urTLOEzJXEuWNKDYqm+VLM8jnIj4Ju6jiYhCw/GskaX4ozwpp+X390O+1Tg0v88s5E7o3xrADVdbaydjjRiJ9BXTucsErLu0X+Fxbh5OaRFHUBfW00+4fRDLXLhlCgmuVvEsqxaSS1dijRcGb8Lpax2uDJErKlK+ikJaI9qvZz6y1C9/fFhjSdGtU90xmYWnJkdGNlf+xnA7HG0iJrGA8fiy/vtSyb3tXioRbHdJMs7Y2UCa0SunFXb4R66AavtMgrNWAqOxBf1ht5M5lTq44ok7rx60hq3sFjWyOpM3KDk7ox/7PBzSMp6jvViiFN3xhOXrB/YEPYcg/fuXbhIYsPrq0PJ/ZW+jKBXSllm8V+jmc6Ay3CuBSR+XEd6JdimZdiGZFh5kjiJZI4y27rFvlOGy9zrJNlGEJSupHUjf5CcV+u8GFW3ZVSJjI3obIvl9+Xy68aiM2yC5fLjgscthl2odvGyxwrsYxOSFY3s4YR1vRDqnZILbybUfdm82alePz57iC15HNAKaypbvVcPRCbL9unl2xc9fLshlDgxsPh05+7lf/uc3yD8eSj+nuKZyuAQA4AOQDkAJADQA4AOQDkAJADQA4AOQCAHOB0yVHTL02C+qemJ6nsKZ4dNK4ZFan8c+UQYrJScQMGYg5wanJgj88UnDaqXVawvkw1LcYiBxSZIlqMXQ6AmANADgAgB4AcAHIAyAEgB4AcAHIAyAEgB4AcAEAOADkA5ACQA0AOADkA5ACQA0AOADkAgBwAcgDIASAHgBwAcgDIASAHgBwAcgDIgSEAkANADgA5AOQAkANADgA5AOQAkANADgAgB4AcAHIAyAEgB4AcAHIAyAEgB4AcAEAOUJH/AR1P9xM7c9VpAAAAAElFTkSuQmCC">
+<title>Session 513X</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@400;500;600;700&family=Barlow:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --asphalt:#0E1217;
+  --panel:#171D25;
+  --panel2:#1F2630;
+  --line:#2A333F;
+  --ink:#EAF0F6;
+  --dim:#8494A5;
+  --dimmer:#5D6B7A;
+  --green:#35D07F;
+  --amber:#FFB023;
+  --red:#FF4438;
+  --display:"Barlow Condensed","Avenir Next Condensed","HelveticaNeue-CondensedBold","Arial Narrow",system-ui,sans-serif;
+  --body:"Barlow","Inter",system-ui,-apple-system,sans-serif;
+  --pad:14px;
+}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{margin:0;padding:0}
+body{
+  background:var(--asphalt);
+  color:var(--ink);
+  font-family:var(--body);
+  font-size:16px;
+  line-height:1.45;
+  padding-bottom:120px;
+  overscroll-behavior-y:contain;
+}
+input,button,select,textarea{font-family:inherit}
+
+/* ---------- shift light strip: signature element ---------- */
+.shift{
+  position:sticky;top:0;z-index:40;
+  display:flex;gap:3px;
+  padding:8px var(--pad) 7px;
+  background:linear-gradient(180deg,#0E1217 70%,rgba(14,18,23,0));
+}
+.seg{
+  flex:1;height:7px;border-radius:1px;
+  background:#222B36;
+  transition:background .18s ease, box-shadow .18s ease;
+}
+.seg.on-g{background:var(--green);box-shadow:0 0 9px rgba(53,208,127,.55)}
+.seg.on-a{background:var(--amber);box-shadow:0 0 9px rgba(255,176,35,.55)}
+.seg.on-r{background:var(--red);box-shadow:0 0 10px rgba(255,68,56,.6)}
+@keyframes redline{0%,100%{opacity:1}50%{opacity:.35}}
+.shift.redline .seg{animation:redline .55s steps(1) infinite}
+
+/* ---------- header ---------- */
+.head{padding:2px var(--pad) 12px}
+.headtop{display:flex;align-items:flex-start;justify-content:space-between;gap:10px}
+.headtop>div:first-child{min-width:0}
+.eyebrow{
+  font-family:var(--display);font-weight:600;font-size:12px;
+  letter-spacing:.22em;text-transform:uppercase;color:var(--dimmer);
+}
+.date{
+  font-family:var(--display);font-weight:700;
+  font-size:32px;line-height:1.02;letter-spacing:-.015em;
+  font-variant-numeric:tabular-nums;margin-top:2px;
+  white-space:nowrap;
+}
+@media (max-width:400px){ .date{font-size:28px} }
+@media (max-width:360px){ .date{font-size:24px} .plate{font-size:19px;padding:4px 6px 2px;border-width:2px} }
+.plate{
+  font-family:var(--display);font-weight:700;font-size:23px;line-height:1;
+  color:var(--red);border:2px solid var(--red);border-radius:5px;
+  padding:5px 8px 3px;letter-spacing:.02em;flex:none;
+}
+.progline{
+  display:flex;align-items:baseline;gap:8px;margin-top:9px;
+  font-family:var(--display);letter-spacing:.06em;text-transform:uppercase;
+}
+.progline b{font-size:19px;font-weight:700;font-variant-numeric:tabular-nums}
+.progline span{font-size:12px;color:var(--dim);letter-spacing:.18em}
+
+/* ---------- tabs ---------- */
+.tabs{
+  position:sticky;top:22px;z-index:35;
+  display:flex;gap:6px;overflow-x:auto;
+  padding:6px var(--pad) 10px;
+  background:var(--asphalt);
+  border-bottom:1px solid var(--line);
+  scrollbar-width:none;
+}
+.tabs::-webkit-scrollbar{display:none}
+.tab{
+  flex:none;background:var(--panel);border:1px solid var(--line);
+  color:var(--dim);border-radius:4px;padding:8px 11px 6px;
+  font-family:var(--display);font-weight:600;font-size:14px;
+  letter-spacing:.1em;text-transform:uppercase;cursor:pointer;
+  display:flex;align-items:baseline;gap:7px;
+}
+.tab .ct{font-size:12px;color:var(--dimmer);font-variant-numeric:tabular-nums}
+.tab[aria-selected="true"]{background:var(--amber);border-color:var(--amber);color:#0E1217}
+.tab[aria-selected="true"] .ct{color:rgba(14,18,23,.62)}
+.tab.full[aria-selected="false"]{border-color:#2E5140;color:var(--green)}
+.tab.full[aria-selected="false"] .ct{color:var(--green)}
+
+/* ---------- panels ---------- */
+.wrap{padding:14px var(--pad) 0}
+.zonehead{margin:2px 0 11px}
+.zonehead h2{
+  font-family:var(--display);font-weight:700;font-size:21px;
+  letter-spacing:.02em;margin:0;text-transform:uppercase;
+}
+.zonehead p{margin:3px 0 0;font-size:13.5px;color:var(--dim)}
+
+.row{
+  background:var(--panel);border:1px solid var(--line);
+  border-radius:6px;margin-bottom:8px;overflow:hidden;
+}
+.row.done{border-color:#2E5140;background:#141E19}
+.rowtop{display:flex;align-items:stretch;gap:0}
+.tick{
+  flex:none;width:52px;border:0;background:transparent;
+  border-right:1px solid var(--line);cursor:pointer;
+  display:flex;align-items:center;justify-content:center;
+}
+.row.done .tick{border-right-color:#2E5140}
+.box{
+  width:23px;height:23px;border:2px solid var(--dimmer);border-radius:4px;
+  display:flex;align-items:center;justify-content:center;
+  transition:background .14s ease,border-color .14s ease;
+}
+.row.done .box{background:var(--green);border-color:var(--green)}
+.box svg{width:14px;height:14px;opacity:0;transition:opacity .14s ease}
+.row.done .box svg{opacity:1}
+.meta{
+  flex:1;min-width:0;text-align:left;background:transparent;border:0;
+  color:inherit;padding:11px 12px;cursor:pointer;
+}
+.name{
+  font-family:var(--display);font-weight:600;font-size:18.5px;
+  line-height:1.16;letter-spacing:.005em;
+}
+.row.done .name{color:var(--dim);text-decoration:line-through;text-decoration-color:rgba(132,148,165,.5)}
+.presc{
+  font-family:var(--display);font-size:14.5px;letter-spacing:.05em;
+  color:var(--amber);margin-top:3px;font-variant-numeric:tabular-nums;
+}
+.row.done .presc{color:var(--dimmer)}
+.musc{font-size:12.5px;color:var(--dim);margin-top:2px}
+.cue{font-size:13px;color:var(--dim);margin-top:4px;line-height:1.35}
+
+/* ---------- log drawer ---------- */
+.drawer{display:none;border-top:1px solid var(--line);padding:11px 12px 12px;background:var(--panel2)}
+.row.open .drawer{display:block}
+.row.done .drawer{border-top-color:#2E5140}
+.fields{display:grid;grid-template-columns:1fr 1fr 1fr;gap:7px}
+.field label{
+  display:block;font-family:var(--display);font-size:11px;letter-spacing:.16em;
+  text-transform:uppercase;color:var(--dimmer);margin-bottom:3px;
+}
+.field input{
+  width:100%;background:var(--asphalt);border:1px solid var(--line);
+  color:var(--ink);border-radius:4px;padding:9px 8px;font-size:16px;
+  font-variant-numeric:tabular-nums;
+}
+.field input:focus,textarea:focus{outline:2px solid var(--amber);outline-offset:1px;border-color:var(--amber)}
+textarea{
+  width:100%;margin-top:7px;background:var(--asphalt);border:1px solid var(--line);
+  color:var(--ink);border-radius:4px;padding:9px 8px;font-size:15px;
+  resize:vertical;min-height:44px;
+}
+.rest{
+  margin-top:8px;width:100%;background:transparent;border:1px solid var(--line);
+  color:var(--dim);border-radius:4px;padding:9px;cursor:pointer;
+  font-family:var(--display);font-size:14px;letter-spacing:.14em;text-transform:uppercase;
+  font-variant-numeric:tabular-nums;
+}
+.rest.running{border-color:var(--amber);color:var(--amber)}
+
+/* ---------- surprise ---------- */
+.controls{display:grid;grid-template-columns:1fr 1fr;gap:7px;margin-bottom:10px}
+.controls .field select{
+  width:100%;background:var(--panel);border:1px solid var(--line);color:var(--ink);
+  border-radius:4px;padding:10px 8px;font-size:15px;
+}
+.roll{
+  width:100%;margin-bottom:11px;background:var(--amber);border:0;color:#0E1217;
+  border-radius:5px;padding:14px;cursor:pointer;
+  font-family:var(--display);font-weight:700;font-size:17px;
+  letter-spacing:.16em;text-transform:uppercase;
+}
+.roll:active{transform:translateY(1px)}
+.empty{
+  border:1px dashed var(--line);border-radius:6px;padding:22px 16px;
+  text-align:center;color:var(--dim);font-size:14px;
+}
+
+/* ---------- cooldown ---------- */
+.stretch{background:var(--panel);border:1px solid var(--line);border-radius:6px;padding:11px 12px;margin-bottom:8px}
+.stretch .grp{font-family:var(--display);font-weight:600;font-size:16px;letter-spacing:.03em}
+.stretch .how{font-size:13.5px;color:var(--dim);margin-top:3px;line-height:1.35}
+.stretch .hold{font-family:var(--display);font-size:14px;letter-spacing:.08em;color:var(--amber);margin-top:4px;font-variant-numeric:tabular-nums}
+
+/* ---------- save bar ---------- */
+.savebar{
+  position:fixed;left:0;right:0;bottom:0;z-index:50;
+  background:rgba(14,18,23,.94);backdrop-filter:blur(9px);
+  border-top:1px solid var(--line);
+  padding:10px var(--pad) calc(10px + env(safe-area-inset-bottom));
+  display:grid;grid-template-columns:1fr 1fr;gap:8px;
+}
+.savebar button{
+  border-radius:5px;padding:13px 8px;cursor:pointer;
+  font-family:var(--display);font-weight:700;font-size:15px;
+  letter-spacing:.12em;text-transform:uppercase;
+}
+.btn-main{background:var(--green);border:0;color:#0E1217}
+.btn-alt{background:transparent;border:1px solid var(--line);color:var(--ink)}
+.toast{
+  position:fixed;left:50%;transform:translateX(-50%);
+  bottom:calc(84px + env(safe-area-inset-bottom));z-index:60;
+  background:var(--panel2);border:1px solid var(--amber);color:var(--ink);
+  padding:11px 16px;border-radius:5px;font-size:14px;
+  opacity:0;pointer-events:none;transition:opacity .2s ease;max-width:88vw;text-align:center;
+}
+.toast.show{opacity:1}
+.note{padding:14px var(--pad) 0;font-size:12.5px;color:var(--dimmer);line-height:1.45}
+.jswarn{
+  margin:4px var(--pad) 0;padding:14px;
+  border:1px solid var(--amber);border-radius:6px;background:#241C08;
+}
+.jswarn b{display:block;font-family:var(--display);font-size:17px;letter-spacing:.02em;color:var(--amber);margin-bottom:4px}
+.jswarn span{font-size:14px;color:var(--ink);line-height:1.4}
+.backup{display:flex;gap:8px;padding:9px var(--pad) 0}
+.backup button{
+  flex:1;background:transparent;border:1px solid var(--line);color:var(--dim);
+  border-radius:5px;padding:11px 8px;cursor:pointer;
+  font-family:var(--display);font-size:13px;letter-spacing:.12em;text-transform:uppercase;
+}
+.backup button:active{border-color:var(--amber);color:var(--amber)}
+@media (prefers-reduced-motion:reduce){
+  *{animation:none!important;transition:none!important}
+}
+</style>
+</head>
+<body>
+
+<div class="shift" id="shift" aria-hidden="true"></div>
+
+<header class="head">
+  <div class="headtop">
+    <div>
+      <div class="eyebrow">Session</div>
+      <div class="date" id="dateOut">—</div>
+    </div>
+    <div class="plate">513X</div>
+  </div>
+  <div class="progline">
+    <b id="progNum">0/0</b><span>logged</span>
+  </div>
+</header>
+
+<div class="jswarn" id="jsWarn">
+  <b>This viewer isn't running the app.</b>
+  <span>If you opened this from a file, open it from its web link instead. If you are already on the web link, pull down to reload.</span>
+</div>
+
+<nav class="tabs" id="tabs" role="tablist" aria-label="Session zones"></nav>
+
+<main class="wrap" id="main"></main>
+
+<p class="note" id="footNote"></p>
+<div class="backup">
+  <button type="button" id="btnBackup">Save backup</button>
+  <button type="button" id="btnRestore">Restore backup</button>
+  <input type="file" id="fileIn" accept="application/json,.json" hidden>
+</div>
+
+<div class="savebar">
+  <button class="btn-main" id="btnCsv">Download CSV</button>
+  <button class="btn-alt" id="btnCopy">Copy rows</button>
+</div>
+
+<div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+<script>
+/* Diagnostics first: if any of the code below fails to parse or throws,
+   show it on screen instead of leaving a dead page. */
+(function(){
+  function show(title, detail){
+    var w = document.getElementById("jsWarn");
+    if(!w) return;
+    w.style.display = "block";
+    w.innerHTML = "<b>" + title + "</b><span>" + String(detail||"").replace(/[<>]/g,"") + "</span>";
+  }
+  window.addEventListener("error", function(ev){
+    show("Something went wrong loading the app.",
+         (ev.message||"Unknown error") + (ev.lineno ? "  (line " + ev.lineno + ")" : ""));
+  });
+  window.addEventListener("unhandledrejection", function(ev){
+    show("Something went wrong loading the app.",
+         (ev.reason && ev.reason.message) ? ev.reason.message : "Promise rejected");
+  });
+  // proves scripts execute at all in this viewer
+  window.__scriptsRan = true;
+
+  // if scripts ran but the app never drew, say that specifically
+  setTimeout(function(){
+    var tabs = document.getElementById("tabs");
+    var w = document.getElementById("jsWarn");
+    if(!w || w.style.display === "block") return;      // already reported something
+    if(tabs && tabs.children.length === 0){
+      show("Scripts run, but the app didn't finish loading.",
+           "Tell Claude you saw this message — it means the code stopped partway, not that the viewer blocked it.");
+    }
+  }, 3000);
+})();
+
+/* ============================================================
+   Session 513X — gym session tracker
+   Data mirrors the Jessy Training Tracker workbook.
+============================================================ */
+
+const ZONES = [
+  {id:"warm",  label:"Warm-up", short:"Warm",       title:"Warm-up",
+   sub:"15 min cardio, then the serratus reset from your RMT.", session:"Warm-up"},
+  {id:"fh",    label:"Field House", short:"Field House", title:"Field House",
+   sub:"Back of the gym. Do all of these before walking up front.", session:"Day 1 — Field House"},
+  {id:"wr",    label:"Weight Room", short:"Weight Room", title:"Weight Room",
+   sub:"Front of the building. Includes Someshan's 3×/week block.", session:"Day 1 — Weight Room"},
+  {id:"surp",  label:"Surprise", short:"Surprise",   title:"Surprise me",
+   sub:"Swap in something different. Balanced across zones, or hammer one area.", session:"Surprise Me"},
+  {id:"cool",  label:"Cooldown", short:"Cool",       title:"Cooldown",
+   sub:"Matched to what you worked today.", session:"Cooldown"}
+];
+
+const WARM = [
+  {id:"w0", name:"Cardio warm-up", presc:"15 min · easy pace", load:"elliptical", sets:"1", reps:"15 min",
+   cue:"Elliptical today. Change the machine in the log if you use something else."},
+  {id:"w1", name:"Forearms-on-Wall Reach Ups", presc:"6 slow reps · 1–2 rounds", load:"bodyweight", sets:"1–2", reps:"6",
+   cue:"Reach long from the armpit, don't shrug. Neck stays quiet."},
+  {id:"w2", name:"Side-Lying Serratus Rotation Reach (90/90)", presc:"4 reps each side", load:"light weight", sets:"–", reps:"4 each side",
+   cue:"Reach drives the return. No pinching between shoulder blades."},
+  {id:"w3", name:"Banded Protraction Control (Serratus Punch)", presc:"8 controlled reps each side", load:"light band", sets:"–", reps:"8 each side",
+   cue:"Inferior angle glides wide. Return to neutral without hard retraction."}
+];
+
+const FH = [
+  {id:"f1", name:"Band Pull Aparts", sets:"1", reps:"10", load:"red band", musc:"Rear delts, upper back"},
+  {id:"f2", name:"Band Shoulder Rotations", sets:"1", reps:"10", load:"red band", musc:"Rotator cuff, shoulders"},
+  {id:"f3", name:"Cat/Cow", sets:"1", reps:"5", load:"bodyweight", musc:"Spine mobility, core"},
+  {id:"f4", name:"Deep Lunge to Hamstring Stretch", sets:"1", reps:"3/3", load:"bodyweight", musc:"Hamstrings, hip flexors"},
+  {id:"f5", name:"Walking Lunges", sets:"3", reps:"5/5", load:"bodyweight", musc:"Quads, glutes, hamstrings"},
+  {id:"f6", name:"Gravitron Assisted Pull Ups", sets:"1", reps:"12", load:"100 lbs assist", musc:"Lats, biceps"},
+  {id:"f7", name:"Gravitron Assisted Chin Ups", sets:"1", reps:"12", load:"100 lbs assist", musc:"Biceps, lats"},
+  {id:"f8", name:"Gravitron Assisted Dips", sets:"1", reps:"12", load:"100 lbs assist", musc:"Triceps, chest"},
+  {id:"f9", name:"Loaded McGill Curl Ups", sets:"3", reps:"10", load:"10 lbs", musc:"Core (abs, deep stabilizers)"},
+  {id:"f10",name:"Bulgarian Split Squat", sets:"3", reps:"12, hold 3 sec", load:"bodyweight", musc:"Quads, glutes (unilateral)"}
+];
+
+const WR = [
+  {id:"r1", name:"Neutral Grip Lat Pulldown", sets:"4", reps:"12", load:"60 lbs", musc:"Lats, biceps"},
+  {id:"r2", name:"Leg Press", sets:"4", reps:"12", load:"90 lbs", musc:"Quads, glutes, hamstrings"},
+  {id:"r3", name:"Seated Calf Raise", sets:"3", reps:"12", load:"20 lbs", musc:"Calves", cue:"Last time: didn't like free weights."},
+  {id:"r4", name:"Seated Dumbbell Shoulder Press", sets:"3", reps:"12", load:"10 lbs", musc:"Shoulders, triceps", cue:"Try 15 lbs this session."},
+  {id:"r5", name:"\u201CRow\u201D Shoulder Ext, cable unilateral, sitting", sets:"3", reps:"12", load:"20 lbs", musc:"Rotator cuff, rear delts",
+   cue:"Someshan's app says 2 lbs — plates don't go under 5, so you run 20."},
+  {id:"r6", name:"Single Arm Bent-Over Dumbbell Row", sets:"4", reps:"12", load:"20 lbs", musc:"Back, biceps, rear delts"},
+  {id:"r7", name:"Olympic Bar Deadlift", sets:"2", reps:"10", load:"bar only", musc:"Hamstrings, glutes, lower back"}
+];
+
+const COOL = [
+  {grp:"Lats / mid-back", how:"Child's pose with arms reached long, or overhead lat stretch against a wall", hold:"30–45 sec each"},
+  {grp:"Shoulders / rotator cuff", how:"Cross-body shoulder stretch, then doorway chest stretch", hold:"30 sec each side"},
+  {grp:"Quads / hip flexors", how:"Standing or kneeling quad and hip flexor stretch — couch stretch if you have time", hold:"30–45 sec each leg"},
+  {grp:"Glutes / hamstrings", how:"Seated or lying figure-4, then standing hamstring stretch", hold:"30–45 sec each side"},
+  {grp:"Calves", how:"Standing calf stretch against a wall or step", hold:"30 sec each leg"},
+  {grp:"Core / obliques", how:"Gentle supine spinal twist, both directions", hold:"30 sec each side"}
+];
+
+/* Full exercise database for Surprise me — mirrors the workbook */
+const DB = [
+  {n:"Sked (sled push/pull)",z:"Cardio",s:"2",r:"8-10",l:"25 lbs",m:"Quads, glutes, cardio"},
+  {n:"Elliptical",z:"Cardio",s:"1",r:"15 min",l:"easy pace",m:"Full body, cardio"},
+  {n:"Spin Bike (standing)",z:"Cardio",s:"3",r:"30 sec",l:"standing",m:"Quads, calves, cardio"},
+  {n:"Swings (kettlebell)",z:"Cardio",s:"3",r:"30 sec",l:"12 lbs",m:"Glutes, hamstrings, core"},
+  {n:"Kettlebell Squat / Shoulder Press",z:"Cardio",s:"3",r:"30 sec",l:"12 lbs",m:"Quads, glutes, shoulders"},
+  {n:"Back Lunge",z:"Legs",s:"2",r:"8 each side",l:"no weight",m:"Quads, glutes, hamstrings"},
+  {n:"Deadlift",z:"Legs",s:"2",r:"10",l:"45 lbs",m:"Hamstrings, glutes, lower back"},
+  {n:"Squats (squat rack)",z:"Legs",s:"2",r:"10",l:"10 lbs each side",m:"Quads, glutes"},
+  {n:"Leg Extension",z:"Legs",s:"2",r:"10",l:"30 lbs",m:"Quads"},
+  {n:"Leg Curl",z:"Legs",s:"TBD",r:"TBD",l:"60 lbs",m:"Hamstrings"},
+  {n:"Walking Lunges",z:"Legs",s:"3",r:"5/5",l:"bodyweight",m:"Quads, glutes, hamstrings"},
+  {n:"Leg Press",z:"Legs",s:"4",r:"12",l:"90 lbs",m:"Quads, glutes, hamstrings"},
+  {n:"Seated Calf Raise",z:"Legs",s:"3",r:"12",l:"20 lbs",m:"Calves"},
+  {n:"Trap Bar Deadlift",z:"Legs",s:"TBD",r:"TBD",l:"TBD",m:"Glutes, hamstrings, lower back"},
+  {n:"Bulgarian Split Squat",z:"Legs",s:"3",r:"12, hold 3 sec",l:"bodyweight",m:"Quads, glutes (unilateral)"},
+  {n:"Olympic Bar Lunge",z:"Legs",s:"2",r:"10",l:"bar only",m:"Quads, glutes"},
+  {n:"Olympic Bar Deadlift",z:"Legs",s:"2",r:"10",l:"bar only",m:"Hamstrings, glutes, lower back"},
+  {n:"Seated Chest Press",z:"Upper Body",s:"2",r:"10",l:"60 lbs",m:"Chest, triceps, front shoulders"},
+  {n:"Dumbbell Bent Arm Lateral Raise",z:"Upper Body",s:"2",r:"10",l:"10 lbs",m:"Shoulders (delts)"},
+  {n:"Cable Machine Row",z:"Upper Body",s:"2",r:"10",l:"60 lbs",m:"Back, biceps"},
+  {n:"Dumbbell Shoulder Press",z:"Upper Body",s:"2",r:"10 / 8",l:"10 lbs",m:"Shoulders, triceps"},
+  {n:"Neutral Grip Lat Pulldown",z:"Upper Body",s:"4",r:"12",l:"60 lbs",m:"Lats, biceps"},
+  {n:"Seated Dumbbell Shoulder Press",z:"Upper Body",s:"3",r:"12",l:"10 lbs",m:"Shoulders, triceps"},
+  {n:"Gravitron Assisted Pull Ups",z:"Upper Body",s:"1",r:"12",l:"100 lbs assist",m:"Lats, biceps"},
+  {n:"Gravitron Assisted Chin Ups",z:"Upper Body",s:"1",r:"12",l:"100 lbs assist",m:"Biceps, lats"},
+  {n:"Gravitron Assisted Dips",z:"Upper Body",s:"1",r:"12",l:"100 lbs assist",m:"Triceps, chest"},
+  {n:"Biceps Curls",z:"Upper Body",s:"3",r:"10/10/6",l:"40 lbs",m:"Biceps"},
+  {n:"Triceps Pull Down",z:"Upper Body",s:"3",r:"10",l:"40 lbs",m:"Triceps"},
+  {n:"Single Arm Bent-Over Dumbbell Row",z:"Upper Body",s:"4",r:"12",l:"20 lbs",m:"Back, biceps, rear delts"},
+  {n:"Band Pull Aparts",z:"Upper Body",s:"1",r:"10",l:"red band",m:"Rear delts, upper back"},
+  {n:"Plank",z:"Core",s:"2",r:"30 sec",l:"bodyweight",m:"Core (abs, deep stabilizers)"},
+  {n:"Loaded McGill Curl Ups",z:"Core",s:"3",r:"10",l:"10 lbs",m:"Core (abs, deep stabilizers)"},
+  {n:"Landmine Rotations",z:"Core",s:"TBD",r:"TBD",l:"TBD",m:"Obliques, core (rotational)"},
+  {n:"Cable Pallof Press",z:"Core",s:"TBD",r:"TBD",l:"TBD",m:"Obliques, core (anti-rotation)"},
+  {n:"Plank — Rock to Toes",z:"Core",s:"2",r:"30 sec",l:"bodyweight",m:"Core (abs), shoulders"},
+  {n:"Bicycle with Band",z:"Core",s:"2",r:"20",l:"resistance band",m:"Obliques, abs"},
+  {n:"Crunch",z:"Core",s:"2",r:"20",l:"bodyweight",m:"Abs"},
+  {n:"Band Shoulder Rotations",z:"Mobility/Hip",s:"1",r:"10",l:"red band",m:"Rotator cuff, shoulders"},
+  {n:"Cat/Cow",z:"Mobility/Hip",s:"1",r:"5",l:"bodyweight",m:"Spine mobility, core"},
+  {n:"Deep Lunge to Hamstring Stretch",z:"Mobility/Hip",s:"1",r:"3/3",l:"bodyweight",m:"Hamstrings, hip flexors"},
+  {n:"Copenhagen Plank Ups",z:"Mobility/Hip",s:"TBD",r:"TBD",l:"TBD",m:"Adductors, obliques"},
+  {n:"Cable External Hip Rotation",z:"Mobility/Hip",s:"TBD",r:"TBD",l:"TBD",m:"Hip rotators, glutes"},
+  {n:"Cable Abductions",z:"Mobility/Hip",s:"TBD",r:"TBD",l:"TBD",m:"Glute medius, hip abductors"},
+  {n:"Front Leg Lift (band)",z:"Mobility/Hip",s:"2",r:"10",l:"resistance band",m:"Hip flexors"},
+  {n:"Side Leg Lifts (band)",z:"Mobility/Hip",s:"2",r:"10",l:"resistance band",m:"Hip abductors, glute medius"},
+  {n:"Back Leg Lifts (band)",z:"Mobility/Hip",s:"2",r:"10",l:"resistance band",m:"Glutes"},
+  {n:"Quadriceps Stretch, Foot Behind on Chair",z:"Mobility/Hip",s:"3",r:"12",l:"bodyweight, hold 3s",m:"Quads, hip flexors"},
+  {n:"Forearms-on-Wall Reach Ups",z:"Mobility/Hip",s:"1-2",r:"6 slow reps",l:"bodyweight",m:"Serratus anterior, upper back"},
+  {n:"Side-Lying Serratus Rotation Reach (90/90)",z:"Mobility/Hip",s:"–",r:"4 each side",l:"light weight",m:"Serratus anterior, obliques"}
+];
+const ZONE_NAMES = ["Legs","Upper Body","Core","Mobility/Hip","Cardio"];
+
+/* ---------------- element handles ---------------- */
+function $(id){ return document.getElementById(id); }
+const elDate=$("dateOut"), elProg=$("progNum"), elFoot=$("footNote"),
+      elShift=$("shift"), elTabs=$("tabs"), elMain=$("main"), elToast=$("toast"),
+      elCsv=$("btnCsv"), elCopy=$("btnCopy"),
+      elBackup=$("btnBackup"), elRestore=$("btnRestore"), elFile=$("fileIn");
+
+/* ---------------- state ---------------- */
+const today = new Date();
+const iso = today.getFullYear()+"-"+String(today.getMonth()+1).padStart(2,"0")+"-"+String(today.getDate()).padStart(2,"0");
+const KEY = "session513x:"+iso;
+const OLD_KEY = "session959:"+iso;
+
+let state = { log:{}, surprise:[], mode:"Balanced Mix", zone:"Random" };
+let active = "warm";
+let storageOK = true;
+
+/* Storage: try Claude's artifact storage first (works in the chat preview),
+   then the browser's own storage (works once this file is saved to the phone),
+   then memory as a last resort. */
+function waitForStorage(ms){
+  const t0 = Date.now();
+  return new Promise(resolve=>{
+    (function poll(){
+      if(typeof window.storage !== "undefined" && window.storage) return resolve(true);
+      if(Date.now()-t0 > ms) return resolve(false);
+      setTimeout(poll, 40);
+    })();
+  });
+}
+
+const Store = {
+  mode:"memory", mem:{},
+  async init(){
+    if(await waitForStorage(700)){ this.mode="claude"; return; }
+    try{
+      window.localStorage.setItem("__t513x","1");
+      window.localStorage.removeItem("__t513x");
+      this.mode="local"; return;
+    }catch(e){}
+    this.mode="memory";
+  },
+  async get(k){
+    if(this.mode==="claude"){
+      try{ const r=await window.storage.get(k); return r && r.value; }catch(e){ return null; }
+    }
+    if(this.mode==="local"){
+      try{ return window.localStorage.getItem(k); }catch(e){ return null; }
+    }
+    return this.mem[k]||null;
+  },
+  async set(k,v){
+    if(this.mode==="claude"){
+      try{ await window.storage.set(k,v); return true; }catch(e){ this.mode="local"; }
+    }
+    if(this.mode==="local"){
+      try{ window.localStorage.setItem(k,v); return true; }catch(e){ this.mode="memory"; }
+    }
+    this.mem[k]=v; return false;
+  },
+  label(){
+    if(this.mode==="local") return "Saved on this phone. Safe to close and come back.";
+    if(this.mode==="claude") return "Saving in this window. Tap Save backup before you close it.";
+    return "Not saving automatically — tap Save backup to keep your work.";
+  }
+};
+
+function serialise(){
+  return JSON.stringify(state, (k,v)=> k==="_open" ? undefined : v);
+}
+
+async function load(){
+  await Store.init();
+  let raw = await Store.get(KEY);
+  if(!raw){ raw = await Store.get(OLD_KEY); }   // carry over anything saved under the old number
+  if(raw){
+    try{ state = Object.assign(state, JSON.parse(raw)); }catch(e){}
+  }
+}
+let saveTimer=null;
+function save(){
+  clearTimeout(saveTimer);
+  saveTimer=setTimeout(async ()=>{
+    const okNow = await Store.set(KEY, serialise());
+    if(okNow !== storageOK){ storageOK = okNow; }
+    updateFootNote();
+  },250);
+}
+
+function entry(id){
+  if(!state.log[id]) state.log[id] = {done:false, sets:"", reps:"", weight:"", note:""};
+  return state.log[id];
+}
+
+/* all trackable items (everything except cooldown, which is guidance) */
+function trackable(){
+  return [
+    ...WARM.map(x=>({...x, zone:"warm"})),
+    ...FH.map(x=>({...x, zone:"fh"})),
+    ...WR.map(x=>({...x, zone:"wr"})),
+    ...state.surprise.map(x=>({...x, zone:"surp"}))
+  ];
+}
+
+/* ---------------- header + shift light ---------------- */
+const SEGS = 14;
+function renderHead(){
+  const opts = {weekday:"short", day:"numeric", month:"short", year:"numeric"};
+  elDate.textContent = today.toLocaleDateString("en-CA", opts).replace(/,/g,"");
+  const items = trackable();
+  const done = items.filter(i=>entry(i.id).done).length;
+  const total = items.length;
+  elProg.textContent = done+"/"+total;
+
+  const pct = total ? done/total : 0;
+  const lit = Math.round(pct*SEGS);
+  const shift = elShift;
+  shift.innerHTML = "";
+  for(let i=0;i<SEGS;i++){
+    const d=document.createElement("div");
+    d.className="seg";
+    if(i<lit){
+      d.classList.add(i < SEGS*0.6 ? "on-g" : (i < SEGS*0.86 ? "on-a" : "on-r"));
+    }
+    shift.appendChild(d);
+  }
+  shift.classList.toggle("redline", total>0 && done===total);
+}
+
+/* ---------------- tabs ---------------- */
+function renderTabs(){
+  const tabs = elTabs;
+  tabs.innerHTML = "";
+  ZONES.forEach(z=>{
+    const b=document.createElement("button");
+    b.className="tab"; b.type="button"; b.role="tab";
+    b.setAttribute("aria-selected", z.id===active ? "true":"false");
+    let count="";
+    if(z.id!=="cool"){
+      const items = trackable().filter(i=>i.zone===z.id);
+      const d = items.filter(i=>entry(i.id).done).length;
+      count = d+"/"+items.length;
+      if(items.length && d===items.length) b.classList.add("full");
+    }
+    b.innerHTML = '<span>'+z.short+'</span>'+(count?'<span class="ct">'+count+'</span>':'');
+    b.onclick=()=>{ active=z.id; render(); };
+    tabs.appendChild(b);
+    if(z.id===active){
+      requestAnimationFrame(()=>{
+        const l = b.offsetLeft - (tabs.clientWidth - b.offsetWidth)/2;
+        if(typeof tabs.scrollTo === "function") tabs.scrollTo(Math.max(0,l), 0);
+        else tabs.scrollLeft = Math.max(0,l);
+      });
+    }
+  });
+}
+
+/* ---------------- rows ---------------- */
+const CHECK='<svg viewBox="0 0 20 20" fill="none"><path d="M4 10.5l4 4 8-9" stroke="#0E1217" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/></svg>';
+
+function rowEl(item){
+  const e = entry(item.id);
+  const row=document.createElement("div");
+  row.className="row"+(e.done?" done":"")+(e._open?" open":"");
+
+  const presc = item.presc ? item.presc
+    : [item.sets && item.sets!=="–" ? item.sets+"×"+item.reps : item.reps, item.load].filter(Boolean).join(" · ");
+
+  const top=document.createElement("div"); top.className="rowtop";
+
+  const tick=document.createElement("button");
+  tick.className="tick"; tick.type="button";
+  tick.setAttribute("aria-label", (e.done?"Mark not done: ":"Mark done: ")+item.name);
+  tick.setAttribute("aria-pressed", e.done?"true":"false");
+  tick.innerHTML='<span class="box">'+CHECK+'</span>';
+  tick.onclick=()=>{
+    e.done=!e.done;
+    if(e.done && !e.weight && !e.reps){ e.weight=item.load||""; e.reps=item.reps||""; e.sets=item.sets||""; }
+    save(); render();
+  };
+
+  const meta=document.createElement("button");
+  meta.className="meta"; meta.type="button";
+  meta.setAttribute("aria-expanded", e._open?"true":"false");
+  meta.innerHTML =
+    '<div class="name"></div>'+
+    '<div class="presc"></div>'+
+    (item.musc?'<div class="musc"></div>':'')+
+    (item.cue?'<div class="cue"></div>':'');
+  meta.querySelector(".name").textContent=item.name;
+  meta.querySelector(".presc").textContent=presc;
+  if(item.musc) meta.querySelector(".musc").textContent=item.musc;
+  if(item.cue) meta.querySelector(".cue").textContent=item.cue;
+  meta.onclick=()=>{ e._open=!e._open; save(); render(); };
+
+  top.appendChild(tick); top.appendChild(meta);
+  row.appendChild(top);
+
+  const dr=document.createElement("div"); dr.className="drawer";
+  dr.innerHTML =
+    '<div class="fields">'+
+      '<div class="field"><label>Sets</label><input inputmode="numeric" data-k="sets"></div>'+
+      '<div class="field"><label>Reps</label><input inputmode="text" data-k="reps"></div>'+
+      '<div class="field"><label>Weight</label><input inputmode="text" data-k="weight"></div>'+
+    '</div>'+
+    '<textarea data-k="note" placeholder="How did it feel?"></textarea>'+
+    '<button class="rest" type="button">Rest 30s</button>';
+
+  dr.querySelectorAll("input,textarea").forEach(inp=>{
+    const k=inp.dataset.k;
+    inp.value=e[k]||"";
+    if(k==="sets") inp.placeholder=item.sets||"";
+    if(k==="reps") inp.placeholder=item.reps||"";
+    if(k==="weight") inp.placeholder=item.load||"";
+    inp.oninput=()=>{ e[k]=inp.value; save(); renderHead(); };
+  });
+
+  const rest=dr.querySelector(".rest");
+  rest.onclick=()=>{
+    if(rest.dataset.run) return;
+    let t=30; rest.dataset.run="1"; rest.classList.add("running");
+    rest.textContent="Rest "+t+"s";
+    const iv=setInterval(()=>{
+      t--; rest.textContent = t>0 ? "Rest "+t+"s" : "Go";
+      if(t<=0){ clearInterval(iv); setTimeout(()=>{
+        rest.textContent="Rest 30s"; rest.classList.remove("running"); delete rest.dataset.run;
+      },1400); }
+    },1000);
+  };
+
+  row.appendChild(dr);
+  return row;
+}
+
+/* ---------------- surprise me ---------------- */
+function shuffle(a){ for(let i=a.length-1;i>0;i--){ const j=Math.floor(Math.random()*(i+1)); [a[i],a[j]]=[a[j],a[i]]; } return a; }
+
+function roll(){
+  let picks=[];
+  if(state.mode==="Balanced Mix"){
+    ZONE_NAMES.forEach(z=>{
+      const pool=DB.filter(x=>x.z===z);
+      if(pool.length) picks.push(pool[Math.floor(Math.random()*pool.length)]);
+    });
+  }else{
+    const z = state.zone==="Random" ? ZONE_NAMES[Math.floor(Math.random()*ZONE_NAMES.length)] : state.zone;
+    picks = shuffle(DB.filter(x=>x.z===z)).slice(0,5);
+  }
+  // clear old surprise log entries so counts stay honest
+  state.surprise.forEach(s=>{ delete state.log[s.id]; });
+  state.surprise = picks.map((p,i)=>({
+    id:"s"+i, name:p.n, sets:p.s, reps:p.r, load:p.l, musc:p.m+" · "+p.z
+  }));
+  save(); render();
+}
+
+/* ---------------- main render ---------------- */
+function render(){
+  renderHead(); renderTabs();
+  const z = ZONES.find(x=>x.id===active);
+  const main=elMain;
+  main.innerHTML="";
+
+  const h=document.createElement("div"); h.className="zonehead";
+  h.innerHTML='<h2></h2><p></p>';
+  h.querySelector("h2").textContent=z.title;
+  h.querySelector("p").textContent=z.sub;
+  main.appendChild(h);
+
+  if(active==="warm") WARM.forEach(i=>main.appendChild(rowEl(i)));
+  if(active==="fh")   FH.forEach(i=>main.appendChild(rowEl(i)));
+  if(active==="wr")   WR.forEach(i=>main.appendChild(rowEl(i)));
+
+  if(active==="surp"){
+    const c=document.createElement("div"); c.className="controls";
+    c.innerHTML=
+      '<div class="field"><label>Mode</label><select id="selMode">'+
+        '<option>Balanced Mix</option><option>Isolate a Body Area</option></select></div>'+
+      '<div class="field"><label>Target zone</label><select id="selZone">'+
+        ['Random',...ZONE_NAMES].map(o=>'<option>'+o+'</option>').join("")+'</select></div>';
+    main.appendChild(c);
+    const sm=c.querySelector("#selMode"), sz=c.querySelector("#selZone");
+    sm.value=state.mode; sz.value=state.zone;
+    sz.disabled = state.mode==="Balanced Mix";
+    sm.onchange=()=>{ state.mode=sm.value; save(); render(); };
+    sz.onchange=()=>{ state.zone=sz.value; save(); };
+
+    const b=document.createElement("button");
+    b.className="roll"; b.type="button";
+    b.textContent = state.surprise.length ? "Roll again" : "Roll a workout";
+    b.onclick=roll;
+    main.appendChild(b);
+
+    if(!state.surprise.length){
+      const e=document.createElement("div"); e.className="empty";
+      e.textContent="Balanced Mix pulls one exercise from each of Legs, Upper Body, Core, Mobility/Hip and Cardio. Isolate pulls up to five from a single zone.";
+      main.appendChild(e);
+    } else {
+      state.surprise.forEach(i=>main.appendChild(rowEl(i)));
+    }
+  }
+
+  if(active==="cool"){
+    COOL.forEach(s=>{
+      const d=document.createElement("div"); d.className="stretch";
+      d.innerHTML='<div class="grp"></div><div class="how"></div><div class="hold"></div>';
+      d.querySelector(".grp").textContent=s.grp;
+      d.querySelector(".how").textContent=s.how;
+      d.querySelector(".hold").textContent=s.hold;
+      main.appendChild(d);
+    });
+  }
+
+  updateFootNote();
+}
+
+function updateFootNote(){
+  elFoot.textContent = Store.label();
+}
+
+/* ---------------- export ---------------- */
+const HEADERS = ["Date","Trainer/Session","Exercise","Sets","Reps","Weight","Feedback / How it felt"];
+
+function rows(){
+  const out=[];
+  trackable().forEach(i=>{
+    const e=entry(i.id);
+    if(!e.done && !e.sets && !e.reps && !e.weight && !e.note) return;
+    const z=ZONES.find(x=>x.id===i.zone);
+    out.push([
+      iso,
+      z ? z.session : "",
+      i.name,
+      e.sets || i.sets || "",
+      e.reps || i.reps || "",
+      e.weight || i.load || "",
+      [e.note, e.done ? "" : "not completed"].filter(Boolean).join(" — ")
+    ]);
+  });
+  return out;
+}
+
+function toast(msg){
+  const t=elToast;
+  t.textContent=msg; t.classList.add("show");
+  clearTimeout(t._h); t._h=setTimeout(()=>t.classList.remove("show"),2600);
+}
+
+elCsv.onclick=()=>{
+  const r=rows();
+  if(!r.length){ toast("Nothing logged yet — tick something off first."); return; }
+  const esc=v=>/[",\n]/.test(v) ? '"'+String(v).replace(/"/g,'""')+'"' : v;
+  const csv=[HEADERS,...r].map(line=>line.map(esc).join(",")).join("\r\n");
+  const blob=new Blob(["\ufeff"+csv],{type:"text/csv;charset=utf-8"});
+  const url=URL.createObjectURL(blob);
+  const a=document.createElement("a");
+  a.href=url; a.download="workout-log-"+iso+".csv";
+  document.body.appendChild(a); a.click(); a.remove();
+  setTimeout(()=>URL.revokeObjectURL(url),1500);
+  toast("Saved "+r.length+" row"+(r.length>1?"s":"")+" as CSV.");
+};
+
+elCopy.onclick=async ()=>{
+  const r=rows();
+  if(!r.length){ toast("Nothing logged yet — tick something off first."); return; }
+  const tsv=r.map(line=>line.join("\t")).join("\n");
+  try{
+    await navigator.clipboard.writeText(tsv);
+    toast(r.length+" row"+(r.length>1?"s":"")+" copied. Paste into your Workout Log.");
+  }catch(err){
+    const ta=document.createElement("textarea");
+    ta.value=tsv; ta.style.position="fixed"; ta.style.opacity="0";
+    document.body.appendChild(ta); ta.select();
+    try{ document.execCommand("copy"); toast("Rows copied. Paste into your Workout Log."); }
+    catch(e2){ toast("Couldn't copy here — use Download CSV instead."); }
+    ta.remove();
+  }
+};
+
+/* ---------------- backup / restore ---------------- */
+elBackup.onclick=()=>{
+  const blob=new Blob([serialise()],{type:"application/json"});
+  const url=URL.createObjectURL(blob);
+  const a=document.createElement("a");
+  a.href=url; a.download="session-513x-"+iso+".json";
+  document.body.appendChild(a); a.click(); a.remove();
+  setTimeout(()=>URL.revokeObjectURL(url),1500);
+  toast("Backup saved. Restore it here any time.");
+};
+
+elRestore.onclick=()=>elFile.click();
+elFile.onchange=()=>{
+  const f=elFile.files && elFile.files[0];
+  if(!f) return;
+  const fr=new FileReader();
+  fr.onload=()=>{
+    try{
+      const incoming=JSON.parse(fr.result);
+      if(!incoming || typeof incoming!=="object" || !incoming.log) throw new Error("bad shape");
+      state=Object.assign({log:{},surprise:[],mode:"Balanced Mix",zone:"Random"}, incoming);
+      save(); render();
+      toast("Backup restored.");
+    }catch(e){
+      toast("That file isn't a Session 513X backup.");
+    }
+    elFile.value="";
+  };
+  fr.onerror=()=>{ toast("Couldn't read that file."); elFile.value=""; };
+  fr.readAsText(f);
+};
+
+/* nudge before an accidental close if there's work that isn't on the phone yet */
+window.addEventListener("beforeunload", e=>{
+  if(Store.mode==="local") return;          // already safe on the device
+  if(!rows().length) return;                // nothing logged, nothing to lose
+  e.preventDefault(); e.returnValue="";
+});
+
+/* ---------------- boot ---------------- */
+(async ()=>{
+  const warn = document.getElementById("jsWarn");
+  if(warn) warn.style.display = "none";   // scripts run here, so hide the notice
+  render();              // paint straight away so there's never a blank screen
+  await load();
+  render();              // then fill in anything that was saved
+})();
+</script>
+</body>
+</html>
