@@ -210,6 +210,54 @@ textarea{
 .stretch .how{font-size:13.5px;color:var(--dim);margin-top:3px;line-height:1.35}
 .stretch .hold{font-family:var(--display);font-size:14px;letter-spacing:.08em;color:var(--amber);margin-top:4px;font-variant-numeric:tabular-nums}
 
+/* ---------- review tab ---------- */
+.revtimes{display:grid;grid-template-columns:1fr 1fr 1fr;gap:7px;margin-bottom:10px}
+.revtimes input[type=time]{
+  width:100%;background:var(--panel);border:1px solid var(--line);color:var(--ink);
+  border-radius:4px;padding:9px 8px;font-size:16px;font-variant-numeric:tabular-nums;
+}
+.dur{
+  font-family:var(--display);font-size:19px;font-weight:600;color:var(--amber);
+  padding:8px 4px;font-variant-numeric:tabular-nums;
+}
+.energy{margin:2px 0 10px}
+.energy>label{
+  display:block;font-family:var(--display);font-size:11px;letter-spacing:.16em;
+  text-transform:uppercase;color:var(--dimmer);margin-bottom:6px;
+}
+.pips{display:grid;grid-template-columns:repeat(5,1fr);gap:5px}
+.pip{
+  background:var(--panel);border:1px solid var(--line);border-radius:5px;
+  padding:9px 2px 7px;cursor:pointer;color:var(--dim);
+  display:flex;flex-direction:column;align-items:center;gap:2px;
+}
+.pip b{font-family:var(--display);font-size:17px;font-variant-numeric:tabular-nums}
+.pip span{font-size:9.5px;letter-spacing:.04em}
+.pip.on{background:var(--amber);border-color:var(--amber);color:#0E1217}
+.revnote{margin-bottom:10px}
+.revnote>label{
+  display:block;font-family:var(--display);font-size:11px;letter-spacing:.16em;
+  text-transform:uppercase;color:var(--dimmer);margin-bottom:4px;
+}
+.revnote textarea{margin-top:0;min-height:88px}
+.revcopy{
+  width:100%;background:transparent;border:1px solid var(--line);color:var(--ink);
+  border-radius:5px;padding:12px;cursor:pointer;margin-bottom:16px;
+  font-family:var(--display);font-size:14px;letter-spacing:.14em;text-transform:uppercase;
+}
+.revcopy:active{border-color:var(--amber);color:var(--amber)}
+.histhead{
+  font-family:var(--display);font-size:12px;letter-spacing:.2em;text-transform:uppercase;
+  color:var(--dimmer);margin:4px 0 8px;
+}
+.hist{background:var(--panel);border:1px solid var(--line);border-radius:6px;padding:10px 12px;margin-bottom:7px}
+.hist.today{border-color:var(--amber)}
+.hrow{display:flex;justify-content:space-between;align-items:baseline;gap:10px}
+.hdate{font-family:var(--display);font-weight:600;font-size:16px;letter-spacing:.03em}
+.hstat{font-family:var(--display);font-size:15px;color:var(--green);font-variant-numeric:tabular-nums}
+.hmeta{font-size:12.5px;color:var(--dim);margin-top:2px;font-variant-numeric:tabular-nums}
+.hnote{font-size:13px;color:var(--ink);margin-top:5px;line-height:1.35}
+
 /* ---------- save bar ---------- */
 .savebar{
   position:fixed;left:0;right:0;bottom:0;z-index:50;
@@ -340,7 +388,9 @@ const ZONES = [
   {id:"surp",  label:"Surprise", short:"Surprise",   title:"Surprise me",
    sub:"Swap in something different. Balanced across zones, or hammer one area.", session:"Surprise Me"},
   {id:"cool",  label:"Cooldown", short:"Cool",       title:"Cooldown",
-   sub:"Matched to what you worked today.", session:"Cooldown"}
+   sub:"Matched to what you worked today.", session:"Cooldown"},
+  {id:"rev",   label:"Review", short:"Review",       title:"Session review",
+   sub:"Close the session out. Over time this is what shows you your patterns.", session:"Review"}
 ];
 
 const WARM = [
@@ -453,8 +503,11 @@ const today = new Date();
 const iso = today.getFullYear()+"-"+String(today.getMonth()+1).padStart(2,"0")+"-"+String(today.getDate()).padStart(2,"0");
 const KEY = "session513x:"+iso;
 const OLD_KEY = "session959:"+iso;
+const IDX = "session513x:index";
 
-let state = { log:{}, surprise:[], mode:"Balanced Mix", zone:"Random" };
+let state = { log:{}, surprise:[], mode:"Balanced Mix", zone:"Random",
+              startedAt:"", endedAt:"", energy:0, review:"" };
+let index = {};   // date -> lightweight summary, so history never re-reads every session
 let active = "warm";
 let storageOK = true;
 
@@ -519,12 +572,57 @@ async function load(){
   if(raw){
     try{ state = Object.assign(state, JSON.parse(raw)); }catch(e){}
   }
+  const rawIdx = await Store.get(IDX);
+  if(rawIdx){ try{ index = JSON.parse(rawIdx) || {}; }catch(e){ index = {}; } }
+}
+
+function hhmm(d){
+  return String(d.getHours()).padStart(2,"0")+":"+String(d.getMinutes()).padStart(2,"0");
+}
+
+/* Stamp the start time the first time she actually does something. */
+function stampStart(){
+  if(!state.startedAt) state.startedAt = hhmm(new Date());
+}
+
+function minutesBetween(a,b){
+  if(!a || !b) return null;
+  const pa=a.split(":"), pb=b.split(":");
+  if(pa.length<2 || pb.length<2) return null;
+  let m = (+pb[0]*60 + +pb[1]) - (+pa[0]*60 + +pa[1]);
+  if(isNaN(m)) return null;
+  if(m < 0) m += 24*60;              // session crossed midnight
+  return m;
+}
+
+function durationText(){
+  const m = minutesBetween(state.startedAt, state.endedAt);
+  if(m === null) return "—";
+  const h = Math.floor(m/60), r = m%60;
+  return h ? h+"h "+r+"m" : r+"m";
+}
+
+function summary(){
+  const items = trackable();
+  return {
+    done: items.filter(i=>entry(i.id).done).length,
+    total: items.length,
+    startedAt: state.startedAt || "",
+    endedAt: state.endedAt || "",
+    minutes: minutesBetween(state.startedAt, state.endedAt),
+    energy: state.energy || 0,
+    review: state.review || ""
+  };
 }
 let saveTimer=null;
 function save(){
   clearTimeout(saveTimer);
   saveTimer=setTimeout(async ()=>{
     const okNow = await Store.set(KEY, serialise());
+    const s = summary();
+    if(s.done || s.review || s.energy || s.startedAt){ index[iso] = s; }
+    else { delete index[iso]; }
+    await Store.set(IDX, JSON.stringify(index));
     if(okNow !== storageOK){ storageOK = okNow; }
     updateFootNote();
   },250);
@@ -579,7 +677,7 @@ function renderTabs(){
     b.className="tab"; b.type="button"; b.role="tab";
     b.setAttribute("aria-selected", z.id===active ? "true":"false");
     let count="";
-    if(z.id!=="cool"){
+    if(z.id!=="cool" && z.id!=="rev"){
       const items = trackable().filter(i=>i.zone===z.id);
       const d = items.filter(i=>entry(i.id).done).length;
       count = d+"/"+items.length;
@@ -617,6 +715,7 @@ function rowEl(item){
   tick.setAttribute("aria-pressed", e.done?"true":"false");
   tick.innerHTML='<span class="box">'+CHECK+'</span>';
   tick.onclick=()=>{
+    stampStart();
     e.done=!e.done;
     if(e.done && !e.weight && !e.reps){ e.weight=item.load||""; e.reps=item.reps||""; e.sets=item.sets||""; }
     save(); render();
@@ -655,7 +754,7 @@ function rowEl(item){
     if(k==="sets") inp.placeholder=item.sets||"";
     if(k==="reps") inp.placeholder=item.reps||"";
     if(k==="weight") inp.placeholder=item.load||"";
-    inp.oninput=()=>{ e[k]=inp.value; save(); renderHead(); };
+    inp.oninput=()=>{ stampStart(); e[k]=inp.value; save(); renderHead(); };
   });
 
   const rest=dr.querySelector(".rest");
@@ -743,6 +842,88 @@ function render(){
     }
   }
 
+  if(active==="rev"){
+    const s0 = summary();
+
+    const times=document.createElement("div");
+    times.className="revtimes";
+    times.innerHTML =
+      '<div class="field"><label>Start</label><input type="time" id="tStart"></div>'+
+      '<div class="field"><label>End</label><input type="time" id="tEnd"></div>'+
+      '<div class="field"><label>Duration</label><div class="dur" id="durOut"></div></div>';
+    main.appendChild(times);
+    const tS=times.querySelector("#tStart"), tE=times.querySelector("#tEnd");
+    tS.value=state.startedAt||""; tE.value=state.endedAt||"";
+    times.querySelector("#durOut").textContent=durationText();
+    tS.onchange=()=>{ state.startedAt=tS.value; save(); render(); };
+    tE.onchange=()=>{ state.endedAt=tE.value; save(); render(); };
+
+    const endBtn=document.createElement("button");
+    endBtn.className="roll"; endBtn.type="button";
+    endBtn.textContent = state.endedAt ? "Update end time to now" : "End session now";
+    endBtn.onclick=()=>{ stampStart(); state.endedAt=hhmm(new Date()); save(); render(); };
+    main.appendChild(endBtn);
+
+    const en=document.createElement("div");
+    en.className="energy";
+    en.innerHTML='<label>Energy through the session</label><div class="pips"></div>';
+    const pips=en.querySelector(".pips");
+    ["Drained","Low","OK","Good","Flying"].forEach((lab,i)=>{
+      const v=i+1;
+      const p=document.createElement("button");
+      p.type="button"; p.className="pip"+(state.energy===v?" on":"");
+      p.innerHTML='<b>'+v+'</b><span>'+lab+'</span>';
+      p.onclick=()=>{ state.energy = (state.energy===v?0:v); save(); render(); };
+      pips.appendChild(p);
+    });
+    main.appendChild(en);
+
+    const rv=document.createElement("div");
+    rv.className="field revnote";
+    rv.innerHTML='<label>How did it go?</label>'+
+      '<textarea id="revNote" placeholder="What went well, what felt hard, how your body responded..."></textarea>';
+    main.appendChild(rv);
+    const rt=rv.querySelector("#revNote");
+    rt.value=state.review||"";
+    rt.oninput=()=>{ state.review=rt.value; save(); };
+
+    const cp=document.createElement("button");
+    cp.className="revcopy"; cp.type="button";
+    cp.textContent="Copy session summary";
+    cp.onclick=copySummary;
+    main.appendChild(cp);
+
+    // ---- history -------------------------------------------------------
+    const dates=Object.keys(index).sort().reverse();
+    const hh=document.createElement("div"); hh.className="histhead";
+    hh.textContent = dates.length ? "Past sessions" : "";
+    main.appendChild(hh);
+
+    if(!dates.length){
+      const e0=document.createElement("div"); e0.className="empty";
+      e0.textContent="Once you finish a few sessions, they stack up here so you can see how energy and effort move around.";
+      main.appendChild(e0);
+    }
+    dates.forEach(dt=>{
+      const r=index[dt]||{};
+      const card=document.createElement("div"); card.className="hist"+(dt===iso?" today":"");
+      const dur = r.minutes==null ? "—" : (r.minutes>=60 ? Math.floor(r.minutes/60)+"h "+(r.minutes%60)+"m" : r.minutes+"m");
+      card.innerHTML =
+        '<div class="hrow"><span class="hdate"></span><span class="hstat"></span></div>'+
+        '<div class="hmeta"></div>'+
+        (r.review?'<div class="hnote"></div>':'');
+      card.querySelector(".hdate").textContent = dt + (dt===iso?"  ·  today":"");
+      card.querySelector(".hstat").textContent = (r.done||0)+"/"+(r.total||0);
+      card.querySelector(".hmeta").textContent =
+        [ (r.startedAt&&r.endedAt) ? r.startedAt+"–"+r.endedAt : null,
+          dur!=="—" ? dur : null,
+          r.energy ? "energy "+r.energy+"/5" : null
+        ].filter(Boolean).join("  ·  ") || "no times logged";
+      if(r.review) card.querySelector(".hnote").textContent = r.review;
+      main.appendChild(card);
+    });
+  }
+
   if(active==="cool"){
     COOL.forEach(s=>{
       const d=document.createElement("div"); d.className="stretch";
@@ -820,15 +1001,51 @@ elCopy.onclick=async ()=>{
   }
 };
 
+const SUMMARY_HEADERS = ["Date","Start","End","Duration (min)","Completed","Energy (1-5)","Review notes"];
+
+function summaryRow(){
+  const s0=summary();
+  return [ iso, s0.startedAt||"", s0.endedAt||"",
+           s0.minutes==null?"":String(s0.minutes),
+           s0.done+"/"+s0.total,
+           s0.energy?String(s0.energy):"",
+           s0.review||"" ];
+}
+
+async function copySummary(){
+  const line=summaryRow().join("\t");
+  try{
+    await navigator.clipboard.writeText(line);
+    toast("Session summary copied. Paste into the Session Review sheet.");
+  }catch(err){
+    const ta=document.createElement("textarea");
+    ta.value=line; ta.style.position="fixed"; ta.style.opacity="0";
+    document.body.appendChild(ta); ta.select();
+    try{ document.execCommand("copy"); toast("Session summary copied."); }
+    catch(e2){ toast("Couldn't copy here."); }
+    ta.remove();
+  }
+}
+
 /* ---------------- backup / restore ---------------- */
-elBackup.onclick=()=>{
-  const blob=new Blob([serialise()],{type:"application/json"});
+elBackup.onclick=async ()=>{
+  // pull every stored session so the backup is a full history, not just today
+  const sessions={};
+  const dates=Object.keys(index);
+  if(dates.indexOf(iso)===-1) dates.push(iso);
+  for(const dt of dates){
+    if(dt===iso){ sessions[dt]=JSON.parse(serialise()); continue; }
+    const raw=await Store.get("session513x:"+dt);
+    if(raw){ try{ sessions[dt]=JSON.parse(raw); }catch(e){} }
+  }
+  const payload={ app:"session513x", version:2, exported:iso, index:index, sessions:sessions };
+  const blob=new Blob([JSON.stringify(payload)],{type:"application/json"});
   const url=URL.createObjectURL(blob);
   const a=document.createElement("a");
-  a.href=url; a.download="session-513x-"+iso+".json";
+  a.href=url; a.download="session-513x-all-"+iso+".json";
   document.body.appendChild(a); a.click(); a.remove();
   setTimeout(()=>URL.revokeObjectURL(url),1500);
-  toast("Backup saved. Restore it here any time.");
+  toast("Backed up "+Object.keys(sessions).length+" session"+(Object.keys(sessions).length>1?"s":"")+".");
 };
 
 elRestore.onclick=()=>elFile.click();
@@ -836,13 +1053,32 @@ elFile.onchange=()=>{
   const f=elFile.files && elFile.files[0];
   if(!f) return;
   const fr=new FileReader();
-  fr.onload=()=>{
+  fr.onload=async ()=>{
     try{
       const incoming=JSON.parse(fr.result);
-      if(!incoming || typeof incoming!=="object" || !incoming.log) throw new Error("bad shape");
-      state=Object.assign({log:{},surprise:[],mode:"Balanced Mix",zone:"Random"}, incoming);
-      save(); render();
-      toast("Backup restored.");
+      if(!incoming || typeof incoming!=="object") throw new Error("bad shape");
+
+      if(incoming.sessions && typeof incoming.sessions==="object"){
+        // full-history backup
+        let n=0;
+        for(const dt of Object.keys(incoming.sessions)){
+          await Store.set("session513x:"+dt, JSON.stringify(incoming.sessions[dt]));
+          n++;
+        }
+        index = Object.assign({}, incoming.index||{});
+        await Store.set(IDX, JSON.stringify(index));
+        const mine=incoming.sessions[iso];
+        if(mine) state=Object.assign({log:{},surprise:[],mode:"Balanced Mix",zone:"Random",
+                                      startedAt:"",endedAt:"",energy:0,review:""}, mine);
+        render();
+        toast("Restored "+n+" session"+(n>1?"s":"")+".");
+      } else if(incoming.log){
+        // older single-day backup
+        state=Object.assign({log:{},surprise:[],mode:"Balanced Mix",zone:"Random",
+                             startedAt:"",endedAt:"",energy:0,review:""}, incoming);
+        save(); render();
+        toast("Backup restored.");
+      } else { throw new Error("bad shape"); }
     }catch(e){
       toast("That file isn't a Session 513X backup.");
     }
