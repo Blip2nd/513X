@@ -88,6 +88,13 @@ input,button,select,textarea{font-family:inherit}
 }
 .progline b{font-size:19px;font-weight:700;font-variant-numeric:tabular-nums}
 .progline span{font-size:12px;color:var(--dim);letter-spacing:.18em}
+.chip{
+  margin-left:auto;border:1px solid var(--line);border-radius:99px;
+  padding:3px 9px 2px;font-size:11px!important;letter-spacing:.12em!important;
+  color:var(--dim);white-space:nowrap;font-variant-numeric:tabular-nums;
+}
+.chip.ok{border-color:#2E5140;color:var(--green)}
+.chip.bad{border-color:var(--red);color:var(--red)}
 
 /* ---------- tabs ---------- */
 .tabs{
@@ -314,6 +321,7 @@ textarea{
   </div>
   <div class="progline">
     <b id="progNum">0/0</b><span>logged</span>
+    <span class="chip" id="saveChip">checking…</span>
   </div>
 </header>
 
@@ -525,6 +533,13 @@ function waitForStorage(ms){
   });
 }
 
+function setChip(kind, text){
+  const c=document.getElementById("saveChip");
+  if(!c) return;
+  c.className = "chip" + (kind?(" "+kind):"");
+  c.textContent = text;
+}
+
 const Store = {
   mode:"memory", mem:{},
   async init(){
@@ -624,6 +639,8 @@ function save(){
     else { delete index[iso]; }
     await Store.set(IDX, JSON.stringify(index));
     if(okNow !== storageOK){ storageOK = okNow; }
+    if(okNow) setChip("ok","saved "+hhmm(new Date()));
+    else setChip("bad","not saving");
     updateFootNote();
   },250);
 }
@@ -1102,6 +1119,16 @@ window.addEventListener("beforeunload", e=>{
   render();              // paint straight away so there's never a blank screen
   await load();
   render();              // then fill in anything that was saved
+
+  // tell her plainly whether this browser will keep her work
+  if(Store.mode === "local"){
+    const items = trackable().filter(i=>entry(i.id).done).length;
+    setChip("ok", items ? "saved · restored" : "saves on this phone");
+  } else if(Store.mode === "claude"){
+    setChip(null, "saves in this window");
+  } else {
+    setChip("bad", "not saving — see below");
+  }
 })();
 </script>
 </body>
