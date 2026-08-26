@@ -13,7 +13,7 @@
 <title>Session 513X</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@400;500;600;700&family=Barlow:wght@400;500;600&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@400;500;600;700&family=Barlow:wght@400;500;600&display=swap" rel="stylesheet" onerror="this.remove()">
 <style>
 :root{
   --asphalt:#0E1217;
@@ -358,11 +358,26 @@ textarea{
     w.style.display = "block";
     w.innerHTML = "<b>" + title + "</b><span>" + String(detail||"").replace(/[<>]/g,"") + "</span>";
   }
+  // The app is considered up once the tab strip has drawn. After that, stray
+  // errors (a blocked web font, a browser extension, a cross-origin
+  // "Script error." with no detail) are noise and must not scare her off a
+  // session that is working perfectly well.
+  function appIsUp(){
+    var tabs = document.getElementById("tabs");
+    return !!(tabs && tabs.children.length);
+  }
+  function noisy(ev){
+    if(ev && ev.target && ev.target !== window) return true;      // a resource failed to load, not the app
+    if(ev && ev.message && /^script error/i.test(ev.message) && !ev.filename) return true; // cross-origin, no detail
+    return false;
+  }
   window.addEventListener("error", function(ev){
+    if(noisy(ev) || appIsUp()) return;
     show("Something went wrong loading the app.",
          (ev.message||"Unknown error") + (ev.lineno ? "  (line " + ev.lineno + ")" : ""));
   });
   window.addEventListener("unhandledrejection", function(ev){
+    if(appIsUp()) return;
     show("Something went wrong loading the app.",
          (ev.reason && ev.reason.message) ? ev.reason.message : "Promise rejected");
   });
