@@ -187,6 +187,8 @@ input,button,select,textarea{font-family:inherit}
 }
 .row.done .presc{color:var(--dimmer)}
 .musc{font-size:12.5px;color:var(--dim);margin-top:2px}
+.carried{font-size:11.5px;color:var(--green);margin-top:2px;letter-spacing:.01em}
+.row.done .carried{color:var(--dimmer)}
 .cue{font-size:13px;color:var(--dim);margin-top:4px;line-height:1.35}
 
 /* ---------- log drawer ---------- */
@@ -294,6 +296,10 @@ textarea{
   font-family:var(--display);font-size:12px;letter-spacing:.18em;text-transform:uppercase;
   color:var(--dimmer);margin:14px 0 7px;
 }
+.nudge{
+  border:1px solid var(--amber);background:#241C08;border-radius:6px;
+  padding:10px 12px;margin:12px 0 2px;font-size:13px;color:var(--ink);line-height:1.35;
+}
 .chips{display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-bottom:2px}
 .chipsel{
   text-align:left;background:var(--panel);border:1px solid var(--line);color:var(--dim);
@@ -375,6 +381,11 @@ textarea{
   opacity:0;pointer-events:none;transition:opacity .2s ease;max-width:88vw;text-align:center;
 }
 .toast.show{opacity:1}
+.toast.cheer{
+  border-color:var(--green);color:var(--green);
+  font-family:var(--display);font-weight:700;font-size:19px;
+  letter-spacing:.06em;padding:12px 22px;
+}
 .note{padding:14px var(--pad) 0;font-size:12.5px;color:var(--dimmer);line-height:1.45}
 .jswarn{
   margin:4px var(--pad) 0;padding:14px;
@@ -524,6 +535,13 @@ const WARM_LIB = [
   {id:"wc_rope", group:"Cardio",   name:"Jump rope",               sets:"3", reps:"60 sec", load:"bodyweight",musc:"Calves, coordination"},
   {id:"wc_sled", group:"Cardio",   name:"Sled push (Sked)",        sets:"2", reps:"8-10",   load:"25 lbs",    musc:"Quads, glutes, cardio"},
 
+  {id:"wk_bird", group:"Core",     name:"Bird dog",                sets:"2", reps:"8 each side",   load:"bodyweight", musc:"Deep core, spinal stability"},
+  {id:"wk_tippy",group:"Core",     name:"Tippy-toe plank",         sets:"2", reps:"30 sec",         load:"bodyweight", musc:"Deep core, shoulders"},
+  {id:"wk_dead", group:"Core",     name:"Dead bug",                sets:"2", reps:"10 each side",   load:"bodyweight", musc:"Deep core, anti-extension"},
+  {id:"wk_hollow",group:"Core",    name:"Hollow hold",             sets:"2", reps:"20 sec",         load:"bodyweight", musc:"Deep core"},
+  {id:"wk_side", group:"Core",     name:"Side plank",              sets:"2", reps:"20 sec each side",load:"bodyweight",musc:"Obliques, lateral core"},
+  {id:"wk_bridge",group:"Core",    name:"Glute bridge march",      sets:"2", reps:"10 each side",   load:"bodyweight", musc:"Glutes, deep core"},
+
   {id:"wm_swing",group:"Mobility", name:"Leg swings, front & side",sets:"1", reps:"10 each way", load:"bodyweight", musc:"Hips, hamstrings"},
   {id:"wm_9090", group:"Mobility", name:"90/90 hip switches",      sets:"1", reps:"8 each side", load:"bodyweight", musc:"Hip rotators"},
   {id:"wm_wgs",  group:"Mobility", name:"World's greatest stretch",sets:"1", reps:"4 each side", load:"bodyweight", musc:"Hips, T-spine, hamstrings"},
@@ -555,7 +573,6 @@ function selectedWarm(){
 const FH = [
   {id:"f1", name:"Band Pull Aparts", sets:"1", reps:"10", load:"red band", musc:"Rear delts, upper back"},
   {id:"f2", name:"Band Shoulder Rotations", sets:"1", reps:"10", load:"red band", musc:"Rotator cuff, shoulders"},
-  {id:"f3", name:"Cat/Cow", sets:"1", reps:"5", load:"bodyweight", musc:"Spine mobility, core"},
   {id:"f4", name:"Deep Lunge to Hamstring Stretch", sets:"1", reps:"3/3", load:"bodyweight", musc:"Hamstrings, hip flexors"},
   {id:"f5", name:"Walking Lunges", sets:"3", reps:"5/5", load:"bodyweight", musc:"Quads, glutes, hamstrings"},
   {id:"f6", name:"Gravitron Assisted Pull Ups", sets:"1", reps:"12", load:"100 lbs assist", musc:"Lats, biceps"},
@@ -582,7 +599,8 @@ const COOL = [
   {grp:"Quads / hip flexors", how:"Standing or kneeling quad and hip flexor stretch — couch stretch if you have time", hold:"30–45 sec each leg"},
   {grp:"Glutes / hamstrings", how:"Seated or lying figure-4, then standing hamstring stretch", hold:"30–45 sec each side"},
   {grp:"Calves", how:"Standing calf stretch against a wall or step", hold:"30 sec each leg"},
-  {grp:"Core / obliques", how:"Gentle supine spinal twist, both directions", hold:"30 sec each side"}
+  {grp:"Core / obliques", how:"Gentle supine spinal twist, both directions", hold:"30 sec each side"},
+  {grp:"Spine / mid-back", how:"Cat/Cow, slow through the full range, breathing with it", hold:"8-10 slow reps"}
 ];
 
 /* Full exercise database for Surprise me — mirrors the workbook */
@@ -655,12 +673,15 @@ const KEY = "session513x:"+iso;
 const OLD_KEY = "session959:"+iso;
 const IDX = "session513x:index";
 const EVT = "session513x:events";
+const LAST = "session513x:last";
 
 let state = { log:{}, surprise:[], mode:"Balanced Mix", zone:"Random",
               startedAt:"", endedAt:"", startedTs:0, energy:0, review:"",
-              warmPicks:["wc_ell","wm_swing","wm_cat"],   // sensible default, all swappable
+              warmPicks:["wc_ell","wk_bird","wk_tippy","wm_swing"],  // always a core element in here
+              coreSeeded:false,
               pain:null, painNote:"" };
 let events = [];   // treatments / flare-ups, kept across sessions
+let lasts = {};    // exercise id -> what she actually lifted last time
 let index = {};   // date -> lightweight summary, so history never re-reads every session
 let active = "warm";
 let storageOK = true;
@@ -737,6 +758,17 @@ async function load(){
   if(rawIdx){ try{ index = JSON.parse(rawIdx) || {}; }catch(e){ index = {}; } }
   const rawEvt = await Store.get(EVT);
   if(rawEvt){ try{ events = JSON.parse(rawEvt) || []; }catch(e){ events = []; } }
+  const rawLast = await Store.get(LAST);
+  if(rawLast){ try{ lasts = JSON.parse(rawLast) || {}; }catch(e){ lasts = {}; } }
+
+  // she asked for a core element in every warm-up: seed one the first time only,
+  // then respect whatever she picks after that
+  if(!state.coreSeeded){
+    const picks = state.warmPicks || [];
+    const hasCore = picks.some(id=>{ const x=WARM_LIB.find(w=>w.id===id); return x && x.group==="Core"; });
+    if(!hasCore) state.warmPicks = picks.concat(["wk_bird"]);
+    state.coreSeeded = true;
+  }
 }
 
 function hhmm(d){
@@ -798,6 +830,14 @@ function save(){
     else { delete index[iso]; }
     await Store.set(IDX, JSON.stringify(index));
     await Store.set(EVT, JSON.stringify(events));
+    trackable().forEach(i=>{
+      const e=state.log[i.id];
+      if(!e) return;
+      const wt=(e.weight||"").trim();
+      if(!wt) return;
+      lasts[i.id] = { weight:wt, sets:(e.sets||"").trim(), reps:(e.reps||"").trim(), date:iso };
+    });
+    await Store.set(LAST, JSON.stringify(lasts));
     if(okNow !== storageOK){ storageOK = okNow; }
     if(okNow) setChip("ok","saved "+hhmm(new Date()));
     else setChip("bad","not saving");
@@ -819,6 +859,42 @@ function trackable(){
     ...WR.map(x=>({...x, zone:"wr"})),
     ...state.surprise.map(x=>({...x, zone:"surp"}))
   ];
+}
+
+/* ---------------- encouragement ---------------- */
+const CHEERS = [
+  "Good job!","Another one crushed!","That\u2019s the way.","Banked it.",
+  "Strong.","Nice work!","Locked in.","One down.","Keep rolling.",
+  "Chalk it up.","Clean rep.","That counts."
+];
+let lastCheer = -1;
+
+function cheer(msg){
+  const t = document.getElementById("toast");
+  if(!t) return;
+  t.textContent = msg;
+  t.className = "toast cheer show";
+  clearTimeout(t._h);
+  t._h = setTimeout(()=>{ t.className = "toast"; }, 1500);
+  if(navigator.vibrate){ try{ navigator.vibrate(18); }catch(e){} }
+}
+
+/* Milestones get their own line; otherwise pick a cheer that isn't the last one. */
+function cheerFor(zoneId){
+  const items = trackable();
+  const all = items.length && items.every(i=>entry(i.id).done);
+  if(all){ cheer("Session complete. Redline."); return; }
+
+  const zone = ZONES.find(z=>z.id===zoneId);
+  const inZone = items.filter(i=>i.zone===zoneId);
+  if(zone && inZone.length && inZone.every(i=>entry(i.id).done)){
+    cheer(zone.title + " done!");
+    return;
+  }
+  let n = Math.floor(Math.random()*CHEERS.length);
+  if(n === lastCheer) n = (n+1) % CHEERS.length;
+  lastCheer = n;
+  cheer(CHEERS[n]);
 }
 
 /* ---------------- session & rest timers ---------------- */
@@ -943,8 +1019,13 @@ function rowEl(item){
   const row=document.createElement("div");
   row.className="row"+(e.done?" done":"")+(e._open?" open":"");
 
-  const presc = item.presc ? item.presc
-    : [item.sets && item.sets!=="–" ? item.sets+"×"+item.reps : item.reps, item.load].filter(Boolean).join(" · ");
+  const L = lasts[item.id];
+  const workingLoad = (L && L.weight) ? L.weight : item.load;
+  const workingSets = (L && L.sets) ? L.sets : item.sets;
+  const workingReps = (L && L.reps) ? L.reps : item.reps;
+  const presc = (item.presc && !(L && L.weight)) ? item.presc
+    : [workingSets && workingSets!=="–" && workingSets!=="-" ? workingSets+"×"+workingReps : workingReps,
+       workingLoad].filter(Boolean).join(" · ");
 
   const top=document.createElement("div"); top.className="rowtop";
 
@@ -956,20 +1037,25 @@ function rowEl(item){
   tick.onclick=()=>{
     stampStart();
     e.done=!e.done;
-    if(e.done && !e.weight && !e.reps){ e.weight=item.load||""; e.reps=item.reps||""; e.sets=item.sets||""; }
+    if(e.done) cheerFor(item.zone || active);
+    if(e.done && !e.weight && !e.reps){ e.weight=workingLoad||""; e.reps=workingReps||""; e.sets=workingSets||""; }
     save(); render();
   };
 
   const meta=document.createElement("button");
   meta.className="meta"; meta.type="button";
   meta.setAttribute("aria-expanded", e._open?"true":"false");
+  const carried = !!(L && L.weight && L.weight !== item.load);
   meta.innerHTML =
     '<div class="name"></div>'+
     '<div class="presc"></div>'+
+    (carried?'<div class="carried"></div>':'')+
     (item.musc?'<div class="musc"></div>':'')+
     (item.cue?'<div class="cue"></div>':'');
   meta.querySelector(".name").textContent=item.name;
   meta.querySelector(".presc").textContent=presc;
+  if(carried) meta.querySelector(".carried").textContent =
+    "your weight from "+L.date.slice(5)+"  ·  programme said "+(item.load||"—");
   if(item.musc) meta.querySelector(".musc").textContent=item.musc;
   if(item.cue) meta.querySelector(".cue").textContent=item.cue;
   meta.onclick=()=>{ e._open=!e._open; save(); render(); };
@@ -990,9 +1076,9 @@ function rowEl(item){
   dr.querySelectorAll("input,textarea").forEach(inp=>{
     const k=inp.dataset.k;
     inp.value=e[k]||"";
-    if(k==="sets") inp.placeholder=item.sets||"";
-    if(k==="reps") inp.placeholder=item.reps||"";
-    if(k==="weight") inp.placeholder=item.load||"";
+    if(k==="sets") inp.placeholder=workingSets||"";
+    if(k==="reps") inp.placeholder=workingReps||"";
+    if(k==="weight") inp.placeholder=workingLoad||"";
     inp.oninput=()=>{ stampStart(); e[k]=inp.value; save(); renderHead(); };
   });
 
@@ -1061,9 +1147,20 @@ function render(){
     hdr.textContent="Swap your warm-up";
     main.appendChild(hdr);
 
-    ["Cardio","Mobility"].forEach(grp=>{
+    const hasCore = (state.warmPicks||[]).some(id=>{
+      const x=WARM_LIB.find(w=>w.id===id); return x && x.group==="Core";
+    });
+    if(!hasCore){
+      const nudge=document.createElement("div"); nudge.className="nudge";
+      nudge.textContent="No core element picked. You wanted one in every warm-up — grab one below.";
+      main.appendChild(nudge);
+    }
+
+    ["Cardio","Core","Mobility"].forEach(grp=>{
       const gl=document.createElement("div"); gl.className="grouplab";
-      gl.textContent = grp==="Cardio" ? "Cardio — pick one" : "Mobility — pick a few";
+      gl.textContent = grp==="Cardio" ? "Cardio — pick one"
+                     : grp==="Core"   ? "Core — keep at least one"
+                     : "Mobility — pick a few";
       main.appendChild(gl);
       const wrap=document.createElement("div"); wrap.className="chips";
       WARM_LIB.filter(w=>w.group===grp).forEach(w=>{
@@ -1429,7 +1526,7 @@ elBackup.onclick=async ()=>{
     const raw=await Store.get("session513x:"+dt);
     if(raw){ try{ sessions[dt]=JSON.parse(raw); }catch(e){} }
   }
-  const payload={ app:"session513x", version:3, exported:iso, index:index, sessions:sessions, events:events };
+  const payload={ app:"session513x", version:3, exported:iso, index:index, sessions:sessions, events:events, lasts:lasts };
   const blob=new Blob([JSON.stringify(payload)],{type:"application/json"});
   const url=URL.createObjectURL(blob);
   const a=document.createElement("a");
@@ -1459,7 +1556,16 @@ elFile.onchange=()=>{
         index = Object.assign({}, incoming.index||{});
         await Store.set(IDX, JSON.stringify(index));
         if(Array.isArray(incoming.events)){ events = incoming.events; await Store.set(EVT, JSON.stringify(events)); }
+        if(incoming.lasts && typeof incoming.lasts==="object"){ lasts = incoming.lasts; await Store.set(LAST, JSON.stringify(lasts)); }
     await Store.set(EVT, JSON.stringify(events));
+    trackable().forEach(i=>{
+      const e=state.log[i.id];
+      if(!e) return;
+      const wt=(e.weight||"").trim();
+      if(!wt) return;
+      lasts[i.id] = { weight:wt, sets:(e.sets||"").trim(), reps:(e.reps||"").trim(), date:iso };
+    });
+    await Store.set(LAST, JSON.stringify(lasts));
         const mine=incoming.sessions[iso];
         if(mine) state=Object.assign({log:{},surprise:[],mode:"Balanced Mix",zone:"Random",
                                       startedAt:"",endedAt:"",energy:0,review:""}, mine);
