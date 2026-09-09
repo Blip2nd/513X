@@ -400,6 +400,21 @@ textarea{
   font-family:var(--display);font-size:13px;letter-spacing:.12em;text-transform:uppercase;
 }
 .backup button:active{border-color:var(--amber);color:var(--amber)}
+.backup + .backup{padding-top:7px}
+.pastebox{display:none;padding:10px var(--pad) 0}
+.pastebox.open{display:block}
+.pastebox label{display:block;font-size:12.5px;color:var(--dim);margin-bottom:6px;line-height:1.35}
+.pastebox textarea{
+  width:100%;min-height:84px;background:var(--panel);border:1px solid var(--line);
+  color:var(--ink);border-radius:5px;padding:9px;font-size:13px;
+}
+.pastebtns{display:flex;gap:8px;margin-top:7px}
+.pastebtns button{
+  flex:1;border-radius:5px;padding:11px;cursor:pointer;
+  font-family:var(--display);font-size:13px;letter-spacing:.12em;text-transform:uppercase;
+}
+#pasteApply{background:var(--green);border:0;color:#0E1217}
+#pasteCancel{background:transparent;border:1px solid var(--line);color:var(--dim)}
 @media (prefers-reduced-motion:reduce){
   *{animation:none!important;transition:none!important}
 }
@@ -444,6 +459,18 @@ textarea{
   <button type="button" id="btnBackup">Save backup</button>
   <button type="button" id="btnRestore">Restore backup</button>
   <input type="file" id="fileIn" accept="application/json,.json" hidden>
+</div>
+<div class="backup">
+  <button type="button" id="btnCopyAll">Copy transfer code</button>
+  <button type="button" id="btnPasteAll">Paste transfer code</button>
+</div>
+<div class="pastebox" id="pasteBox">
+  <label for="pasteIn">Paste the code from your other device, then Apply.</label>
+  <textarea id="pasteIn" placeholder="Paste here..."></textarea>
+  <div class="pastebtns">
+    <button type="button" id="pasteApply">Apply</button>
+    <button type="button" id="pasteCancel">Cancel</button>
+  </div>
 </div>
 
 <div class="savebar">
@@ -663,6 +690,9 @@ const elDate=$("dateOut"), elProg=$("progNum"), elFoot=$("footNote"),
       elShift=$("shift"), elTabs=$("tabs"), elMain=$("main"), elToast=$("toast"),
       elCsv=$("btnCsv"), elCopy=$("btnCopy"),
       elBackup=$("btnBackup"), elRestore=$("btnRestore"), elFile=$("fileIn"),
+      elCopyAll=$("btnCopyAll"), elPasteAll=$("btnPasteAll"),
+      elPasteBox=$("pasteBox"), elPasteIn=$("pasteIn"),
+      elPasteApply=$("pasteApply"), elPasteCancel=$("pasteCancel"),
       elSession=$("btnSession"), elElapsed=$("tElapsed"),
       elRest30=$("btnRest30"), elRest60=$("btnRest60");
 
@@ -1038,7 +1068,10 @@ function rowEl(item){
     stampStart();
     e.done=!e.done;
     if(e.done) cheerFor(item.zone || active);
-    if(e.done && !e.weight && !e.reps){ e.weight=workingLoad||""; e.reps=workingReps||""; e.sets=workingSets||""; }
+    // Deliberately NOT pre-filling weight/sets/reps here. A box that already
+    // holds the programme number looks answered, so the real number ends up in
+    // the notes and never carries forward. Empty boxes with the programme value
+    // as a placeholder make it obvious what to overwrite.
     save(); render();
   };
 
@@ -1068,7 +1101,7 @@ function rowEl(item){
     '<div class="fields">'+
       '<div class="field"><label>Sets</label><input inputmode="numeric" data-k="sets"></div>'+
       '<div class="field"><label>Reps</label><input inputmode="text" data-k="reps"></div>'+
-      '<div class="field"><label>Weight</label><input inputmode="text" data-k="weight"></div>'+
+      '<div class="field"><label>Weight used</label><input inputmode="text" data-k="weight"></div>'+
     '</div>'+
     '<textarea data-k="note" placeholder="How did it feel?"></textarea>'+
     '<button class="rest" type="button">Rest 30s</button>';
@@ -1516,8 +1549,7 @@ async function copySummary(){
 }
 
 /* ---------------- backup / restore ---------------- */
-elBackup.onclick=async ()=>{
-  // pull every stored session so the backup is a full history, not just today
+async function buildPayload(){
   const sessions={};
   const dates=Object.keys(index);
   if(dates.indexOf(iso)===-1) dates.push(iso);
@@ -1526,14 +1558,85 @@ elBackup.onclick=async ()=>{
     const raw=await Store.get("session513x:"+dt);
     if(raw){ try{ sessions[dt]=JSON.parse(raw); }catch(e){} }
   }
-  const payload={ app:"session513x", version:3, exported:iso, index:index, sessions:sessions, events:events, lasts:lasts };
+  return { app:"session513x", version:3, exported:iso, index:index, sessions:sessions, events:events, lasts:lasts };
+}
+
+/* Merge an incoming payload rather than clobbering: newer wins per session,
+   and working weights keep whichever entry is most recent. */
+async function applyPayload(incoming){
+  if(!incoming || typeof incoming!=="object") throw new Error("bad shape");
+  if(incoming.sessions && typeof incoming.sessions==="object"){
+    let n=0;
+    for(const dt of Object.keys(incoming.sessions)){
+      await Store.set("session513x:"+dt, JSON.stringify(incoming.sessions[dt]));
+      n++;
+    }
+    index = Object.assign({}, index, incoming.index||{});
+    await Store.set(IDX, JSON.stringify(index));
+    if(Array.isArray(incoming.events)){ events = incoming.events; await Store.set(EVT, JSON.stringify(events)); }
+    if(incoming.lasts && typeof incoming.lasts==="object"){
+      Object.keys(incoming.lasts).forEach(k=>{
+        const mine=lasts[k], theirs=incoming.lasts[k];
+        if(!mine || !mine.date || (theirs.date && theirs.date >= mine.date)) lasts[k]=theirs;
+      });
+      await Store.set(LAST, JSON.stringify(lasts));
+    }
+    const mine=incoming.sessions[iso];
+    if(mine) state=Object.assign({log:{},surprise:[],mode:"Balanced Mix",zone:"Random",
+                                  startedAt:"",endedAt:"",energy:0,review:"",
+                                  warmPicks:[],coreSeeded:true,pain:null,painNote:""}, mine);
+    render();
+    return n;
+  }
+  if(incoming.log){
+    state=Object.assign({log:{},surprise:[],mode:"Balanced Mix",zone:"Random",
+                         startedAt:"",endedAt:"",energy:0,review:"",
+                         warmPicks:[],coreSeeded:true,pain:null,painNote:""}, incoming);
+    save(); render();
+    return 1;
+  }
+  throw new Error("bad shape");
+}
+
+elCopyAll.onclick=async ()=>{
+  const code=JSON.stringify(await buildPayload());
+  try{
+    await navigator.clipboard.writeText(code);
+    toast("Transfer code copied. Paste it into a note or email, then open that on the other device.");
+  }catch(err){
+    elPasteBox.classList.add("open");
+    elPasteIn.value=code; elPasteIn.select();
+    toast("Copy the text below by hand \u2014 clipboard was blocked.");
+  }
+};
+
+elPasteAll.onclick=()=>{
+  elPasteBox.classList.toggle("open");
+  if(elPasteBox.classList.contains("open")){ elPasteIn.value=""; elPasteIn.focus(); }
+};
+elPasteCancel.onclick=()=>{ elPasteBox.classList.remove("open"); elPasteIn.value=""; };
+elPasteApply.onclick=async ()=>{
+  const txt=(elPasteIn.value||"").trim();
+  if(!txt){ toast("Nothing pasted yet."); return; }
+  try{
+    const n=await applyPayload(JSON.parse(txt));
+    elPasteBox.classList.remove("open"); elPasteIn.value="";
+    toast("Merged "+n+" session"+(n>1?"s":"")+" from your other device.");
+  }catch(e){
+    toast("That doesn\u2019t look like a Session 513X transfer code.");
+  }
+};
+
+elBackup.onclick=async ()=>{
+  const payload=await buildPayload();
   const blob=new Blob([JSON.stringify(payload)],{type:"application/json"});
   const url=URL.createObjectURL(blob);
   const a=document.createElement("a");
   a.href=url; a.download="session-513x-all-"+iso+".json";
   document.body.appendChild(a); a.click(); a.remove();
   setTimeout(()=>URL.revokeObjectURL(url),1500);
-  toast("Backed up "+Object.keys(sessions).length+" session"+(Object.keys(sessions).length>1?"s":"")+".");
+  const n=Object.keys(payload.sessions).length;
+  toast("Backed up "+n+" session"+(n>1?"s":"")+".");
 };
 
 elRestore.onclick=()=>elFile.click();
@@ -1543,47 +1646,14 @@ elFile.onchange=()=>{
   const fr=new FileReader();
   fr.onload=async ()=>{
     try{
-      const incoming=JSON.parse(fr.result);
-      if(!incoming || typeof incoming!=="object") throw new Error("bad shape");
-
-      if(incoming.sessions && typeof incoming.sessions==="object"){
-        // full-history backup
-        let n=0;
-        for(const dt of Object.keys(incoming.sessions)){
-          await Store.set("session513x:"+dt, JSON.stringify(incoming.sessions[dt]));
-          n++;
-        }
-        index = Object.assign({}, incoming.index||{});
-        await Store.set(IDX, JSON.stringify(index));
-        if(Array.isArray(incoming.events)){ events = incoming.events; await Store.set(EVT, JSON.stringify(events)); }
-        if(incoming.lasts && typeof incoming.lasts==="object"){ lasts = incoming.lasts; await Store.set(LAST, JSON.stringify(lasts)); }
-    await Store.set(EVT, JSON.stringify(events));
-    trackable().forEach(i=>{
-      const e=state.log[i.id];
-      if(!e) return;
-      const wt=(e.weight||"").trim();
-      if(!wt) return;
-      lasts[i.id] = { weight:wt, sets:(e.sets||"").trim(), reps:(e.reps||"").trim(), date:iso };
-    });
-    await Store.set(LAST, JSON.stringify(lasts));
-        const mine=incoming.sessions[iso];
-        if(mine) state=Object.assign({log:{},surprise:[],mode:"Balanced Mix",zone:"Random",
-                                      startedAt:"",endedAt:"",energy:0,review:""}, mine);
-        render();
-        toast("Restored "+n+" session"+(n>1?"s":"")+".");
-      } else if(incoming.log){
-        // older single-day backup
-        state=Object.assign({log:{},surprise:[],mode:"Balanced Mix",zone:"Random",
-                             startedAt:"",endedAt:"",energy:0,review:""}, incoming);
-        save(); render();
-        toast("Backup restored.");
-      } else { throw new Error("bad shape"); }
+      const n=await applyPayload(JSON.parse(fr.result));
+      toast("Merged "+n+" session"+(n>1?"s":"")+".");
     }catch(e){
-      toast("That file isn't a Session 513X backup.");
+      toast("That file isn\u2019t a Session 513X backup.");
     }
     elFile.value="";
   };
-  fr.onerror=()=>{ toast("Couldn't read that file."); elFile.value=""; };
+  fr.onerror=()=>{ toast("Couldn\u2019t read that file."); elFile.value=""; };
   fr.readAsText(f);
 };
 
