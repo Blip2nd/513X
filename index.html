@@ -296,6 +296,10 @@ textarea{
   font-family:var(--display);font-size:12px;letter-spacing:.18em;text-transform:uppercase;
   color:var(--dimmer);margin:14px 0 7px;
 }
+.skipped{
+  margin-top:10px;padding:9px 11px;border:1px dashed var(--line);border-radius:6px;
+  font-size:12.5px;color:var(--dimmer);line-height:1.35;
+}
 .nudge{
   border:1px solid var(--amber);background:#241C08;border-radius:6px;
   padding:10px 12px;margin:12px 0 2px;font-size:13px;color:var(--ink);line-height:1.35;
@@ -540,6 +544,8 @@ const ZONES = [
    sub:"Back of the gym. Do all of these before walking up front.", session:"Day 1 — Field House"},
   {id:"wr",    label:"Weight Room", short:"Weight Room", title:"Weight Room",
    sub:"Front of the building. Includes Someshan's 3×/week block.", session:"Day 1 — Weight Room"},
+  {id:"w2",    label:"Workout 2", short:"W2",        title:"Workout 2",
+   sub:"Abagael's August programme. Core, hips and posterior chain.", session:"Workout 2 \u2014 Abagael"},
   {id:"surp",  label:"Surprise", short:"Surprise",   title:"Surprise me",
    sub:"Swap in something different. Balanced across zones, or hammer one area.", session:"Surprise Me"},
   {id:"cool",  label:"Cooldown", short:"Cool",       title:"Cooldown & stretch",
@@ -562,9 +568,12 @@ const WARM_LIB = [
   {id:"wc_rope", group:"Cardio",   name:"Jump rope",               sets:"3", reps:"60 sec", load:"bodyweight",musc:"Calves, coordination"},
   {id:"wc_sled", group:"Cardio",   name:"Sled push (Sked)",        sets:"2", reps:"8-10",   load:"25 lbs",    musc:"Quads, glutes, cardio"},
 
+  {id:"wm_hipopen",group:"Mobility",name:"Hip openers over a box",     sets:"2", reps:"10 each side", load:"bodyweight", musc:"Hip rotators", same:"hip openers"},
+  {id:"wk_latdb",group:"Core",     name:"Lateral banded deadbug",   sets:"3", reps:"8-12 each side",load:"orange band",musc:"Deep core, obliques", same:"lateral deadbug"},
   {id:"wk_bird", group:"Core",     name:"Bird dog",                sets:"2", reps:"8 each side",   load:"bodyweight", musc:"Deep core, spinal stability"},
   {id:"wk_tippy",group:"Core",     name:"Tippy-toe plank",         sets:"2", reps:"30 sec",         load:"bodyweight", musc:"Deep core, shoulders"},
   {id:"wk_dead", group:"Core",     name:"Dead bug",                sets:"2", reps:"10 each side",   load:"bodyweight", musc:"Deep core, anti-extension"},
+  {id:"wk_crunch",group:"Core",    name:"Crunches",                 sets:"2", reps:"20",            load:"bodyweight", musc:"Abs", same:"crunch"},
   {id:"wk_hollow",group:"Core",    name:"Hollow hold",             sets:"2", reps:"20 sec",         load:"bodyweight", musc:"Deep core"},
   {id:"wk_side", group:"Core",     name:"Side plank",              sets:"2", reps:"20 sec each side",load:"bodyweight",musc:"Obliques, lateral core"},
   {id:"wk_bridge",group:"Core",    name:"Glute bridge march",      sets:"2", reps:"10 each side",   load:"bodyweight", musc:"Glutes, deep core"},
@@ -593,6 +602,23 @@ const SERRATUS = [
    cue:"Inferior angle glides wide. Return to neutral without hard retraction."}
 ];
 
+/* If she's already doing a movement in the warm-up, it shouldn't appear again
+   later in the session. Matching is by name so it works across programmes. */
+function moveKey(i){ return ((i && (i.same || i.name)) || "").trim().toLowerCase(); }
+function warmNameSet(){
+  const set=Object.create(null);
+  selectedWarm().forEach(w=>{ set[moveKey(w)]=true; });
+  return set;
+}
+function dedupe(list){
+  const warm=warmNameSet();
+  return list.filter(i=>!warm[moveKey(i)]);
+}
+function dupesIn(list){
+  const warm=warmNameSet();
+  return list.filter(i=>warm[moveKey(i)]);
+}
+
 function selectedWarm(){
   return (state.warmPicks||[]).map(id=>WARM_LIB.find(w=>w.id===id)).filter(Boolean);
 }
@@ -618,6 +644,30 @@ const WR = [
    cue:"Someshan's app says 2 lbs — plates don't go under 5, so you run 20."},
   {id:"r6", name:"Single Arm Bent-Over Dumbbell Row", sets:"4", reps:"12", load:"20 lbs", musc:"Back, biceps, rear delts"},
   {id:"r7", name:"Olympic Bar Deadlift", sets:"2", reps:"10", load:"bar only", musc:"Hamstrings, glutes, lower back"}
+];
+
+const W2 = [
+  {id:"x1", name:"Band Pull Aparts", sets:"2", reps:"10", load:"orange band",
+   musc:"Rear delts, upper back", cue:"Soft elbow, retract scapula at the back."},
+  {id:"x2", name:"Band Shoulder Rotations", sets:"2", reps:"10", load:"orange band",
+   musc:"Rotator cuff, shoulders", cue:"Feel for sticky spots, focus rotation through that area."},
+  {id:"x3", name:"Hip Openers", same:"hip openers", sets:"2", reps:"10 each side", load:"bodyweight",
+   musc:"Hip rotators", cue:"Externally then internally rotate the hip over a ~20 inch box."},
+  {id:"x4", name:"Lateral Load Banded Alternating Deadbug", same:"lateral deadbug", sets:"3-4", reps:"8-12 each side", load:"orange band",
+   musc:"Deep core, obliques",
+   cue:"Lie lateral to the band anchor, band over centre of chest. Brace against the sideways pull through your obliques. Soft elbow."},
+  {id:"x5", name:"Half Kneeling Cable Chopper (High to Low)", sets:"2", reps:"8-10 each side", load:"10-20 lbs",
+   musc:"Obliques, core (rotational)",
+   cue:"Half kneeling in the centre of the stack, cable at standing shoulder height. Rotate through the core to bring it to the opposite hip."},
+  {id:"x6", name:"Standing Cable Adduction", sets:"3", reps:"10 each leg", load:"10 lbs",
+   musc:"Adductors, hip stability",
+   cue:"Working leg attached, stabilise on the opposite stack. Squeeze to bring the foot forward to the centre of your body."},
+  {id:"x7", name:"Back Extension", sets:"4", reps:"8-12", load:"bodyweight to 10 lbs",
+   musc:"Lower back, glutes, hamstrings", cue:"Complete and equal engagement through the posterior chain."},
+  {id:"x8", name:"Standing Calf Raise", sets:"3", reps:"8-10", load:"60 lbs",
+   musc:"Calves", cue:"Shoulder width stance, let the heel drop off the back of the platform."},
+  {id:"x9", name:"Barbell Deadlift (form check)", sets:"1", reps:"8", load:"45 lbs (standard barbell)",
+   musc:"Hamstrings, glutes, lower back", cue:"Form check set, as discussed with Abagael."}
 ];
 
 const COOL = [
@@ -662,6 +712,13 @@ const DB = [
   {n:"Triceps Pull Down",z:"Upper Body",s:"3",r:"10",l:"40 lbs",m:"Triceps"},
   {n:"Single Arm Bent-Over Dumbbell Row",z:"Upper Body",s:"4",r:"12",l:"20 lbs",m:"Back, biceps, rear delts"},
   {n:"Band Pull Aparts",z:"Upper Body",s:"1",r:"10",l:"red band",m:"Rear delts, upper back"},
+  {n:"Half Kneeling Cable Chopper",z:"Core",s:"2",r:"8-10 each side",l:"10-20 lbs",m:"Obliques, core (rotational)"},
+  {n:"Lateral Load Banded Alternating Deadbug",z:"Core",s:"3-4",r:"8-12 each side",l:"orange band",m:"Deep core, obliques"},
+  {n:"Standing Cable Adduction",z:"Mobility/Hip",s:"3",r:"10 each leg",l:"10 lbs",m:"Adductors, hip stability"},
+  {n:"Hip Openers",z:"Mobility/Hip",s:"2",r:"10 each side",l:"bodyweight",m:"Hip rotators"},
+  {n:"Back Extension",z:"Legs",s:"4",r:"8-12",l:"bodyweight to 10 lbs",m:"Lower back, glutes, hamstrings"},
+  {n:"Barbell Deadlift",z:"Legs",s:"1",r:"8",l:"45 lbs",m:"Hamstrings, glutes, lower back"},
+  {n:"Standing Calf Raise",z:"Legs",s:"3",r:"8-10",l:"60 lbs",m:"Calves"},
   {n:"Plank",z:"Core",s:"2",r:"30 sec",l:"bodyweight",m:"Core (abs, deep stabilizers)"},
   {n:"Loaded McGill Curl Ups",z:"Core",s:"3",r:"10",l:"10 lbs",m:"Core (abs, deep stabilizers)"},
   {n:"Landmine Rotations",z:"Core",s:"TBD",r:"TBD",l:"TBD",m:"Obliques, core (rotational)"},
@@ -885,8 +942,9 @@ function trackable(){
   return [
     ...selectedWarm().map(x=>({...x, zone:"warm"})),
     ...SERRATUS.map(x=>({...x, zone:"cool"})),
-    ...FH.map(x=>({...x, zone:"fh"})),
-    ...WR.map(x=>({...x, zone:"wr"})),
+    ...dedupe(FH).map(x=>({...x, zone:"fh"})),
+    ...dedupe(WR).map(x=>({...x, zone:"wr"})),
+    ...dedupe(W2).map(x=>({...x, zone:"w2"})),
     ...state.surprise.map(x=>({...x, zone:"surp"}))
   ];
 }
@@ -1224,8 +1282,17 @@ function render(){
       main.appendChild(wrap);
     });
   }
-  if(active==="fh")   FH.forEach(i=>main.appendChild(rowEl(i)));
-  if(active==="wr")   WR.forEach(i=>main.appendChild(rowEl(i)));
+  if(active==="fh" || active==="wr" || active==="w2"){
+    const src = active==="fh" ? FH : (active==="wr" ? WR : W2);
+    dedupe(src).forEach(i=>main.appendChild(rowEl(i)));
+    const skipped = dupesIn(src);
+    if(skipped.length){
+      const n=document.createElement("div"); n.className="skipped";
+      n.textContent = skipped.map(i=>i.name).join(", ") +
+        (skipped.length>1 ? " are already in your warm-up." : " is already in your warm-up.");
+      main.appendChild(n);
+    }
+  }
 
   if(active==="surp"){
     const c=document.createElement("div"); c.className="controls";
