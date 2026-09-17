@@ -218,6 +218,17 @@ textarea{
   font-variant-numeric:tabular-nums;
 }
 .rest.running{border-color:var(--amber);color:var(--amber)}
+.zoneswitch{display:flex;align-items:center;gap:6px;margin-top:8px}
+.zoneswitch label{
+  font-family:var(--display);font-size:11px;letter-spacing:.16em;text-transform:uppercase;
+  color:var(--dimmer);flex:none;margin-right:2px;
+}
+.zoneswitch button{
+  flex:1;background:transparent;border:1px solid var(--line);color:var(--dim);
+  border-radius:4px;padding:8px 4px;cursor:pointer;
+  font-family:var(--display);font-size:12px;letter-spacing:.08em;text-transform:uppercase;
+}
+.zoneswitch button.on{background:var(--amber);border-color:var(--amber);color:#0E1217}
 
 /* ---------- surprise ---------- */
 .controls{display:grid;grid-template-columns:1fr 1fr;gap:7px;margin-bottom:10px}
@@ -544,8 +555,6 @@ const ZONES = [
    sub:"Back of the gym. Do all of these before walking up front.", session:"Day 1 — Field House"},
   {id:"wr",    label:"Weight Room", short:"Weight Room", title:"Weight Room",
    sub:"Front of the building. Includes Someshan's 3×/week block.", session:"Day 1 — Weight Room"},
-  {id:"w2",    label:"Workout 2", short:"W2",        title:"Workout 2",
-   sub:"Abagael's August programme. Core, hips and posterior chain.", session:"Workout 2 \u2014 Abagael"},
   {id:"surp",  label:"Surprise", short:"Surprise",   title:"Surprise me",
    sub:"Swap in something different. Balanced across zones, or hammer one area.", session:"Surprise Me"},
   {id:"cool",  label:"Cooldown", short:"Cool",       title:"Cooldown & stretch",
@@ -569,7 +578,7 @@ const WARM_LIB = [
   {id:"wc_sled", group:"Cardio",   name:"Sled push (Sked)",        sets:"2", reps:"8-10",   load:"25 lbs",    musc:"Quads, glutes, cardio"},
 
   {id:"wm_hipopen",group:"Mobility",name:"Hip openers over a box",     sets:"2", reps:"10 each side", load:"bodyweight", musc:"Hip rotators", same:"hip openers"},
-  {id:"wk_latdb",group:"Core",     name:"Lateral banded deadbug",   sets:"3", reps:"8-12 each side",load:"orange band",musc:"Deep core, obliques", same:"lateral deadbug"},
+  {id:"wk_latdb",group:"Core",     name:"Lateral banded deadbug",   sets:"3", reps:"8-12 each side",load:"red band",musc:"Deep core, obliques", same:"lateral deadbug"},
   {id:"wk_bird", group:"Core",     name:"Bird dog",                sets:"2", reps:"8 each side",   load:"bodyweight", musc:"Deep core, spinal stability"},
   {id:"wk_tippy",group:"Core",     name:"Tippy-toe plank",         sets:"2", reps:"30 sec",         load:"bodyweight", musc:"Deep core, shoulders"},
   {id:"wk_dead", group:"Core",     name:"Dead bug",                sets:"2", reps:"10 each side",   load:"bodyweight", musc:"Deep core, anti-extension"},
@@ -623,52 +632,68 @@ function selectedWarm(){
   return (state.warmPicks||[]).map(id=>WARM_LIB.find(w=>w.id===id)).filter(Boolean);
 }
 
-const FH = [
-  {id:"f1", name:"Band Pull Aparts", sets:"1", reps:"10", load:"red band", musc:"Rear delts, upper back"},
-  {id:"f2", name:"Band Shoulder Rotations", sets:"1", reps:"10", load:"red band", musc:"Rotator cuff, shoulders"},
-  {id:"f4", name:"Deep Lunge to Hamstring Stretch", sets:"1", reps:"3/3", load:"bodyweight", musc:"Hamstrings, hip flexors"},
-  {id:"f5", name:"Walking Lunges", sets:"3", reps:"5/5", load:"bodyweight", musc:"Quads, glutes, hamstrings"},
-  {id:"f6", name:"Gravitron Assisted Pull Ups", sets:"1", reps:"12", load:"100 lbs assist", musc:"Lats, biceps"},
-  {id:"f7", name:"Gravitron Assisted Chin Ups", sets:"1", reps:"12", load:"100 lbs assist", musc:"Biceps, lats"},
-  {id:"f8", name:"Gravitron Assisted Dips", sets:"1", reps:"12", load:"100 lbs assist", musc:"Triceps, chest"},
-  {id:"f9", name:"Loaded McGill Curl Ups", sets:"3", reps:"10", load:"10 lbs", musc:"Core (abs, deep stabilizers)"},
-  {id:"f10",name:"Bulgarian Split Squat", sets:"3", reps:"12, hold 3 sec", load:"bodyweight", musc:"Quads, glutes (unilateral)"}
-];
+/* One pool. Each exercise has a default room; she can move any of them and the
+   override sticks. Ids are unchanged so existing logs and weights carry over. */
+const EX = [
+  // ---- originally Field House ----
+  {id:"f1",  def:"fh", name:"Band Pull Aparts", sets:"1", reps:"10", load:"red band", musc:"Rear delts, upper back",
+   cue:"Soft elbow, retract the scapula at the back."},
+  {id:"f2",  def:"fh", name:"Band Shoulder Rotations", sets:"1", reps:"10", load:"red band", musc:"Rotator cuff, shoulders",
+   cue:"Feel for sticky spots, focus the rotation through that area."},
+  {id:"f4",  def:"fh", name:"Deep Lunge to Hamstring Stretch", sets:"1", reps:"3/3", load:"bodyweight", musc:"Hamstrings, hip flexors"},
+  {id:"f5",  def:"fh", name:"Walking Lunges", sets:"3", reps:"5/5", load:"bodyweight", musc:"Quads, glutes, hamstrings"},
+  {id:"f6",  def:"fh", name:"Gravitron Assisted Pull Ups", sets:"1", reps:"12", load:"100 lbs assist", musc:"Lats, biceps"},
+  {id:"f7",  def:"fh", name:"Gravitron Assisted Chin Ups", sets:"1", reps:"12", load:"100 lbs assist", musc:"Biceps, lats"},
+  {id:"f8",  def:"fh", name:"Gravitron Assisted Dips", sets:"1", reps:"12", load:"100 lbs assist", musc:"Triceps, chest"},
+  {id:"f9",  def:"fh", name:"Loaded McGill Curl Ups", sets:"3", reps:"10", load:"10 lbs", musc:"Core (abs, deep stabilizers)"},
+  {id:"f10", def:"fh", name:"Bulgarian Split Squat", sets:"3", reps:"12, hold 3 sec", load:"bodyweight", musc:"Quads, glutes (unilateral)"},
 
-const WR = [
-  {id:"r1", name:"Neutral Grip Lat Pulldown", sets:"4", reps:"12", load:"60 lbs", musc:"Lats, biceps"},
-  {id:"r2", name:"Leg Press", sets:"4", reps:"12", load:"90 lbs", musc:"Quads, glutes, hamstrings"},
-  {id:"r3", name:"Seated Calf Raise", sets:"3", reps:"12", load:"20 lbs", musc:"Calves", cue:"Last time: didn't like free weights."},
-  {id:"r4", name:"Seated Dumbbell Shoulder Press", sets:"3", reps:"12", load:"10 lbs", musc:"Shoulders, triceps", cue:"Try 15 lbs this session."},
-  {id:"r5", name:"\u201CRow\u201D Shoulder Ext, cable unilateral, sitting", sets:"3", reps:"12", load:"20 lbs", musc:"Rotator cuff, rear delts",
-   cue:"Someshan's app says 2 lbs — plates don't go under 5, so you run 20."},
-  {id:"r6", name:"Single Arm Bent-Over Dumbbell Row", sets:"4", reps:"12", load:"20 lbs", musc:"Back, biceps, rear delts"},
-  {id:"r7", name:"Olympic Bar Deadlift", sets:"2", reps:"10", load:"bar only", musc:"Hamstrings, glutes, lower back"}
-];
+  // ---- originally Weight Room ----
+  {id:"r1", def:"wr", name:"Neutral Grip Lat Pulldown", sets:"4", reps:"12", load:"60 lbs", musc:"Lats, biceps"},
+  {id:"r2", def:"wr", name:"Leg Press", sets:"4", reps:"12", load:"90 lbs", musc:"Quads, glutes, hamstrings"},
+  {id:"r3", def:"wr", name:"Seated Calf Raise", sets:"3", reps:"12", load:"20 lbs", musc:"Calves", cue:"Last time: didn't like free weights."},
+  {id:"r4", def:"wr", name:"Seated Dumbbell Shoulder Press", sets:"3", reps:"12", load:"10 lbs", musc:"Shoulders, triceps", cue:"Try 15 lbs this session."},
+  {id:"r5", def:"wr", name:"\u201CRow\u201D Shoulder Ext, cable unilateral, sitting", sets:"3", reps:"12", load:"20 lbs", musc:"Rotator cuff, rear delts",
+   cue:"Someshan's app says 2 lbs \u2014 plates don't go under 5, so you run 20."},
+  {id:"r6", def:"wr", name:"Single Arm Bent-Over Dumbbell Row", sets:"4", reps:"12", load:"20 lbs", musc:"Back, biceps, rear delts"},
+  {id:"r7", def:"wr", name:"Olympic Bar Deadlift", sets:"2", reps:"10", load:"bar only", musc:"Hamstrings, glutes, lower back"},
 
-const W2 = [
-  {id:"x1", name:"Band Pull Aparts", sets:"2", reps:"10", load:"orange band",
-   musc:"Rear delts, upper back", cue:"Soft elbow, retract scapula at the back."},
-  {id:"x2", name:"Band Shoulder Rotations", sets:"2", reps:"10", load:"orange band",
-   musc:"Rotator cuff, shoulders", cue:"Feel for sticky spots, focus rotation through that area."},
-  {id:"x3", name:"Hip Openers", same:"hip openers", sets:"2", reps:"10 each side", load:"bodyweight",
+  // ---- Abagael, Workout #2 (August) ----
+  {id:"x3", def:"fh", name:"Hip Openers", same:"hip openers", sets:"2", reps:"10 each side", load:"bodyweight",
    musc:"Hip rotators", cue:"Externally then internally rotate the hip over a ~20 inch box."},
-  {id:"x4", name:"Lateral Load Banded Alternating Deadbug", same:"lateral deadbug", sets:"3-4", reps:"8-12 each side", load:"orange band",
+  {id:"x4", def:"fh", name:"Lateral Load Banded Alternating Deadbug", same:"lateral deadbug", sets:"3-4", reps:"8-12 each side", load:"red band",
    musc:"Deep core, obliques",
    cue:"Lie lateral to the band anchor, band over centre of chest. Brace against the sideways pull through your obliques. Soft elbow."},
-  {id:"x5", name:"Half Kneeling Cable Chopper (High to Low)", sets:"2", reps:"8-10 each side", load:"10-20 lbs",
+  {id:"x5", def:"wr", name:"Half Kneeling Cable Chopper (High to Low)", sets:"2", reps:"8-10 each side", load:"10-20 lbs",
    musc:"Obliques, core (rotational)",
    cue:"Half kneeling in the centre of the stack, cable at standing shoulder height. Rotate through the core to bring it to the opposite hip."},
-  {id:"x6", name:"Standing Cable Adduction", sets:"3", reps:"10 each leg", load:"10 lbs",
+  {id:"x6", def:"wr", name:"Standing Cable Adduction", sets:"3", reps:"10 each leg", load:"10 lbs",
    musc:"Adductors, hip stability",
    cue:"Working leg attached, stabilise on the opposite stack. Squeeze to bring the foot forward to the centre of your body."},
-  {id:"x7", name:"Back Extension", sets:"4", reps:"8-12", load:"bodyweight to 10 lbs",
+  {id:"x7", def:"wr", name:"Back Extension", sets:"4", reps:"8-12", load:"bodyweight to 10 lbs",
    musc:"Lower back, glutes, hamstrings", cue:"Complete and equal engagement through the posterior chain."},
-  {id:"x8", name:"Standing Calf Raise", sets:"3", reps:"8-10", load:"60 lbs",
+  {id:"x8", def:"wr", name:"Standing Calf Raise", sets:"3", reps:"8-10", load:"60 lbs",
    musc:"Calves", cue:"Shoulder width stance, let the heel drop off the back of the platform."},
-  {id:"x9", name:"Barbell Deadlift (form check)", sets:"1", reps:"8", load:"45 lbs (standard barbell)",
-   musc:"Hamstrings, glutes, lower back", cue:"Form check set, as discussed with Abagael."}
+
+  // ---- Abagael, Workout #3 (September) ----
+  {id:"y1", def:"fh", name:"Stabilized Hip Airplanes", sets:"3", reps:"5-8 each leg", load:"bodyweight",
+   musc:"Hip rotators, glutes, balance", cue:"Brace a foam roller against the inside of the leg, just above the knee."},
+  {id:"y2", def:"wr", name:"Barbell Deadlift", sets:"4", reps:"6-8", load:"65 lbs (45 lb bar + 10 each side)",
+   musc:"Hamstrings, glutes, lower back",
+   cue:"Brace at the top before hinging. Rotate pinkies into the bar to engage the lats. Push the ground away."},
+  {id:"y3", def:"wr", name:"Rotational Landmine Press", sets:"3", reps:"5-6 each side", load:"barbell (15 kg)",
+   musc:"Shoulders, obliques, core (rotational)",
+   cue:"Start with the pivot foot slightly forward to leave space for stability in the press position."},
+  {id:"y4", def:"wr", name:"Cable Core Curls", sets:"3", reps:"8-10", load:"80-95 lbs",
+   musc:"Abs, deep core",
+   cue:"Row attachment, use a knee pad. Inhale and brace on the crunch, elbows to the outside of the knee, exhale up."},
+  {id:"y5", def:"wr", name:"Dual Cable Cross Kickbacks", sets:"3-4", reps:"8-10 each leg", load:"7-10 lbs",
+   musc:"Glutes, hamstrings",
+   cue:"Cable arms in, set at about knee height. Opposite ankle to cable, come across and back. Watch the stack: kg on the LEFT, lbs on the RIGHT."}
 ];
+
+function effZone(i){ return (state.zoneOverrides && state.zoneOverrides[i.id]) || i.def; }
+function roomList(z){ return dedupe(EX.filter(i=>effZone(i)===z)); }
 
 const COOL = [
   {grp:"Lats / mid-back", how:"Child's pose with arms reached long, or overhead lat stretch against a wall", hold:"30–45 sec each"},
@@ -713,7 +738,7 @@ const DB = [
   {n:"Single Arm Bent-Over Dumbbell Row",z:"Upper Body",s:"4",r:"12",l:"20 lbs",m:"Back, biceps, rear delts"},
   {n:"Band Pull Aparts",z:"Upper Body",s:"1",r:"10",l:"red band",m:"Rear delts, upper back"},
   {n:"Half Kneeling Cable Chopper",z:"Core",s:"2",r:"8-10 each side",l:"10-20 lbs",m:"Obliques, core (rotational)"},
-  {n:"Lateral Load Banded Alternating Deadbug",z:"Core",s:"3-4",r:"8-12 each side",l:"orange band",m:"Deep core, obliques"},
+  {n:"Lateral Load Banded Alternating Deadbug",z:"Core",s:"3-4",r:"8-12 each side",l:"red band",m:"Deep core, obliques"},
   {n:"Standing Cable Adduction",z:"Mobility/Hip",s:"3",r:"10 each leg",l:"10 lbs",m:"Adductors, hip stability"},
   {n:"Hip Openers",z:"Mobility/Hip",s:"2",r:"10 each side",l:"bodyweight",m:"Hip rotators"},
   {n:"Back Extension",z:"Legs",s:"4",r:"8-12",l:"bodyweight to 10 lbs",m:"Lower back, glutes, hamstrings"},
@@ -766,7 +791,7 @@ let state = { log:{}, surprise:[], mode:"Balanced Mix", zone:"Random",
               startedAt:"", endedAt:"", startedTs:0, energy:0, review:"",
               warmPicks:["wc_ell","wk_bird","wk_tippy","wm_swing"],  // always a core element in here
               coreSeeded:false,
-              pain:null, painNote:"" };
+              pain:null, painNote:"", zoneOverrides:{} };
 let events = [];   // treatments / flare-ups, kept across sessions
 let lasts = {};    // exercise id -> what she actually lifted last time
 let index = {};   // date -> lightweight summary, so history never re-reads every session
@@ -942,9 +967,8 @@ function trackable(){
   return [
     ...selectedWarm().map(x=>({...x, zone:"warm"})),
     ...SERRATUS.map(x=>({...x, zone:"cool"})),
-    ...dedupe(FH).map(x=>({...x, zone:"fh"})),
-    ...dedupe(WR).map(x=>({...x, zone:"wr"})),
-    ...dedupe(W2).map(x=>({...x, zone:"w2"})),
+    ...roomList("fh").map(x=>({...x, zone:"fh"})),
+    ...roomList("wr").map(x=>({...x, zone:"wr"})),
     ...state.surprise.map(x=>({...x, zone:"surp"}))
   ];
 }
@@ -1162,7 +1186,10 @@ function rowEl(item){
       '<div class="field"><label>Weight used</label><input inputmode="text" data-k="weight"></div>'+
     '</div>'+
     '<textarea data-k="note" placeholder="How did it feel?"></textarea>'+
-    '<button class="rest" type="button">Rest 30s</button>';
+    '<button class="rest" type="button">Rest 30s</button>'+
+    (item.def ? '<div class="zoneswitch"><label>Where</label>'+
+       '<button type="button" data-z="fh">Field House</button>'+
+       '<button type="button" data-z="wr">Weight Room</button></div>' : '');
 
   dr.querySelectorAll("input,textarea").forEach(inp=>{
     const k=inp.dataset.k;
@@ -1172,6 +1199,21 @@ function rowEl(item){
     if(k==="weight") inp.placeholder=workingLoad||"";
     inp.oninput=()=>{ stampStart(); e[k]=inp.value; save(); renderHead(); };
   });
+
+  const zs=dr.querySelector(".zoneswitch");
+  if(zs){
+    const now=effZone(item);
+    zs.querySelectorAll("button").forEach(btn=>{
+      if(btn.dataset.z===now) btn.classList.add("on");
+      btn.onclick=()=>{
+        if(!state.zoneOverrides) state.zoneOverrides={};
+        if(btn.dataset.z===item.def) delete state.zoneOverrides[item.id];
+        else state.zoneOverrides[item.id]=btn.dataset.z;
+        save(); render();
+        toast(item.name+" \u2192 "+(btn.dataset.z==="fh"?"Field House":"Weight Room"));
+      };
+    });
+  }
 
   const rest=dr.querySelector(".rest");
   rest.onclick=()=>{
@@ -1282,8 +1324,8 @@ function render(){
       main.appendChild(wrap);
     });
   }
-  if(active==="fh" || active==="wr" || active==="w2"){
-    const src = active==="fh" ? FH : (active==="wr" ? WR : W2);
+  if(active==="fh" || active==="wr"){
+    const src = EX.filter(i=>effZone(i)===active);
     dedupe(src).forEach(i=>main.appendChild(rowEl(i)));
     const skipped = dupesIn(src);
     if(skipped.length){
