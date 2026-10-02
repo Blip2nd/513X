@@ -26,6 +26,8 @@
   --green:#35D07F;
   --amber:#FFB023;
   --red:#FF4438;
+  --violet:#8B5CF6;
+  --violet-deep:#5B3FA8;
   --display:"Barlow Condensed","Avenir Next Condensed","HelveticaNeue-CondensedBold","Arial Narrow",system-ui,sans-serif;
   --body:"Barlow","Inter",system-ui,-apple-system,sans-serif;
   --pad:14px;
@@ -135,7 +137,9 @@ input,button,select,textarea{font-family:inherit}
 }
 .tstart{background:var(--green);border-color:var(--green);color:#0E1217}
 .tstart.running{background:transparent;border-color:var(--red);color:var(--red)}
-.trest{min-width:62px}
+.trest{min-width:58px}
+.tsound{min-width:40px;padding:8px 6px 6px;font-size:15px;letter-spacing:0}
+.tsound.off{color:var(--dimmer);opacity:.55}
 .trest.running{border-color:var(--amber);color:var(--amber);background:#241C08}
 .telapsed{
   flex:1;text-align:center;font-family:var(--display);font-weight:700;
@@ -157,6 +161,14 @@ input,button,select,textarea{font-family:inherit}
   border-radius:6px;margin-bottom:8px;overflow:hidden;
 }
 .row.done{border-color:#2E5140;background:#141E19}
+.row.cooldown.done{border-color:var(--violet-deep);background:#1B1630}
+.row.cooldown.done .box{background:var(--violet);border-color:var(--violet)}
+.row.cooldown.done .tick{border-right-color:var(--violet-deep)}
+.row.cooldown .presc{color:var(--violet)}
+.row.cooldown.done .presc{color:#8E7FC0}
+.tab.coolzone[aria-selected="true"]{background:var(--violet);border-color:var(--violet);color:#0E1217}
+.tab.coolzone.full[aria-selected="false"]{border-color:var(--violet-deep);color:var(--violet)}
+.tab.coolzone.full[aria-selected="false"] .ct{color:var(--violet)}
 .rowtop{display:flex;align-items:stretch;gap:0}
 .tick{
   flex:none;width:52px;border:0;background:transparent;
@@ -303,6 +315,20 @@ textarea{
 .hnote{font-size:13px;color:var(--ink);margin-top:5px;line-height:1.35}
 
 /* ---------- warm-up chooser ---------- */
+.pickbar{
+  display:flex;align-items:baseline;gap:10px;
+  border:1px solid var(--line);border-radius:6px;padding:11px 13px;margin-bottom:9px;
+}
+.pickbar b{font-family:var(--display);font-weight:700;font-size:23px;color:var(--amber);font-variant-numeric:tabular-nums}
+.pickbar span{font-size:13px;color:var(--dim)}
+.pickbar.full{border-color:var(--green)}
+.pickbar.full b{color:var(--green)}
+.pickacts{display:flex;gap:8px;margin-bottom:4px}
+.pickacts button{
+  flex:1;background:transparent;border:1px solid var(--line);color:var(--dim);
+  border-radius:5px;padding:9px;cursor:pointer;
+  font-family:var(--display);font-size:12px;letter-spacing:.12em;text-transform:uppercase;
+}
 .grouplab{
   font-family:var(--display);font-size:12px;letter-spacing:.18em;text-transform:uppercase;
   color:var(--dimmer);margin:14px 0 7px;
@@ -333,6 +359,30 @@ textarea{
 }
 .sincebox b{display:block;font-family:var(--display);font-size:18px;color:var(--amber);letter-spacing:.02em}
 .sincebox span{font-size:13px;color:var(--ink)}
+.fastbox{background:var(--panel);border:1px solid var(--line);border-radius:6px;padding:12px;margin-bottom:9px}
+.fastbox.on{border-color:var(--violet)}
+.fasthead{display:flex;justify-content:space-between;align-items:baseline;gap:10px}
+.fasthead label{
+  font-family:var(--display);font-size:11px;letter-spacing:.16em;text-transform:uppercase;color:var(--dimmer);
+}
+.fasthead span{font-size:12px;color:var(--dim)}
+.fastclock{
+  font-family:var(--display);font-weight:700;font-size:38px;line-height:1.05;
+  font-variant-numeric:tabular-nums;color:var(--dimmer);margin:2px 0 8px;
+}
+.fastbox.on .fastclock{color:var(--violet)}
+.fastbtn{
+  width:100%;background:transparent;border:1px solid var(--line);color:var(--ink);
+  border-radius:5px;padding:11px;cursor:pointer;
+  font-family:var(--display);font-size:14px;letter-spacing:.14em;text-transform:uppercase;
+}
+.fastbox.on .fastbtn{border-color:var(--violet);color:var(--violet)}
+.fasthist{margin:0 0 11px}
+.fastrow{
+  display:flex;justify-content:space-between;padding:6px 2px;border-bottom:1px solid var(--line);
+  font-size:13px;color:var(--dim);
+}
+.fastrow b{font-family:var(--display);font-size:15px;color:var(--ink);font-variant-numeric:tabular-nums}
 .painbox{background:var(--panel);border:1px solid var(--line);border-radius:6px;padding:12px}
 .painbox>label{
   display:block;font-family:var(--display);font-size:11px;letter-spacing:.16em;
@@ -396,6 +446,30 @@ textarea{
   opacity:0;pointer-events:none;transition:opacity .2s ease;max-width:88vw;text-align:center;
 }
 .toast.show{opacity:1}
+.finale{
+  position:fixed;inset:0;z-index:70;display:none;
+  align-items:center;justify-content:center;padding:28px;
+  background:radial-gradient(circle at 50% 42%, rgba(139,92,246,.30), rgba(14,18,23,.97) 68%);
+  backdrop-filter:blur(3px);
+}
+.finale.show{display:flex}
+.finale .card{text-align:center;max-width:320px}
+.finale .big{
+  font-family:var(--display);font-weight:700;font-size:44px;line-height:.98;
+  letter-spacing:.01em;color:var(--violet);text-transform:uppercase;
+}
+.finale .sub{margin-top:10px;font-size:15px;color:var(--ink);line-height:1.4}
+.finale .stats{
+  margin-top:14px;font-family:var(--display);font-size:17px;letter-spacing:.06em;
+  color:var(--dim);font-variant-numeric:tabular-nums;
+}
+.finale button{
+  margin-top:20px;background:var(--violet);border:0;color:#0E1217;border-radius:6px;
+  padding:14px 26px;cursor:pointer;
+  font-family:var(--display);font-weight:700;font-size:16px;letter-spacing:.14em;text-transform:uppercase;
+}
+@keyframes pop{0%{transform:scale(.86);opacity:0}60%{transform:scale(1.04)}100%{transform:scale(1);opacity:1}}
+.finale.show .card{animation:pop .4s ease-out both}
 .toast.cheer{
   border-color:var(--green);color:var(--green);
   font-family:var(--display);font-weight:700;font-size:19px;
@@ -463,6 +537,7 @@ textarea{
   <div class="telapsed" id="tElapsed">0:00</div>
   <button type="button" class="tbtn trest" id="btnRest30">30s</button>
   <button type="button" class="tbtn trest" id="btnRest60">1 min</button>
+  <button type="button" class="tbtn tsound" id="btnSound" aria-label="Sound on or off">&#128266;</button>
 </div>
 
 <nav class="tabs" id="tabs" role="tablist" aria-label="Session zones"></nav>
@@ -494,6 +569,15 @@ textarea{
 </div>
 
 <div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+<div class="finale" id="finale" role="dialog" aria-live="polite" aria-label="Session complete">
+  <div class="card">
+    <div class="big">Grand<br>finale</div>
+    <div class="sub" id="finaleSub"></div>
+    <div class="stats" id="finaleStats"></div>
+    <button type="button" id="finaleClose">Done</button>
+  </div>
+</div>
 
 <script>
 /* Diagnostics first: if any of the code below fails to parse or throws,
@@ -549,6 +633,8 @@ textarea{
 ============================================================ */
 
 const ZONES = [
+  {id:"pick",  label:"Pick", short:"Pick",           title:"Build today",
+   sub:"Choose up to 12. Tomorrow starts with whatever you pick today.", session:"Pick"},
   {id:"warm",  label:"Warm-up", short:"Warm",       title:"Warm-up",
    sub:"Pick what you feel like today. Tap to add or drop anything.", session:"Warm-up"},
   {id:"fh",    label:"Field House", short:"Field House", title:"Field House",
@@ -558,7 +644,7 @@ const ZONES = [
   {id:"surp",  label:"Surprise", short:"Surprise",   title:"Surprise me",
    sub:"Swap in something different. Balanced across zones, or hammer one area.", session:"Surprise Me"},
   {id:"cool",  label:"Cooldown", short:"Cool",       title:"Cooldown & stretch",
-   sub:"Serratus reset from your RMT, then stretches for what you worked.", session:"Cooldown"},
+   sub:"Tick these off like the lifts. Purple means you're on the home straight.", session:"Cooldown"},
   {id:"body",  label:"Body", short:"Body",           title:"Body log",
    sub:"Treatments, flare-ups, and how the shoulder is tracking day to day.", session:"Body"},
   {id:"rev",   label:"Review", short:"Review",       title:"Session review",
@@ -598,21 +684,6 @@ const WARM_LIB = [
   {id:"wm_lunge",group:"Mobility", name:"Deep lunge to hamstring stretch", sets:"1", reps:"3/3", load:"bodyweight", musc:"Hamstrings, hip flexors"}
 ];
 
-/* The serratus reset lives with the cooldown now. */
-const SERRATUS = [
-  {id:"s1", name:"Forearms-on-Wall Reach Ups", presc:"6 slow reps \u00b7 1-2 rounds", load:"bodyweight", sets:"1-2", reps:"6",
-   musc:"Serratus anterior, upper back",
-   cue:"Reach long from the armpit, don't shrug. Neck stays quiet."},
-  {id:"s2", name:"Side-Lying Serratus Rotation Reach (90/90)", presc:"4 reps each side", load:"light weight", sets:"-", reps:"4 each side",
-   musc:"Serratus anterior, obliques",
-   cue:"Reach drives the return. No pinching between shoulder blades."},
-  {id:"s3", name:"Banded Protraction Control (Serratus Punch)", presc:"8 controlled reps each side", load:"light band", sets:"-", reps:"8 each side",
-   musc:"Serratus anterior, shoulder stability",
-   cue:"Inferior angle glides wide. Return to neutral without hard retraction."}
-];
-
-/* If she's already doing a movement in the warm-up, it shouldn't appear again
-   later in the session. Matching is by name so it works across programmes. */
 function moveKey(i){ return ((i && (i.same || i.name)) || "").trim().toLowerCase(); }
 function warmNameSet(){
   const set=Object.create(null);
@@ -688,6 +759,9 @@ const EX = [
    musc:"Abs, deep core",
    cue:"Row attachment, use a knee pad. Inhale and brace on the crunch, elbows to the outside of the knee, exhale up."},
   // ---- Abagael, Workout #4 (September) ----
+  {id:"s3", def:"fh", name:"Banded Protraction Control (Serratus Punch)", sets:"-", reps:"8 each side", load:"light band",
+   musc:"Serratus anterior, shoulder stability",
+   cue:"Inferior angle glides wide. Return to neutral without hard retraction."},
   {id:"z1", def:"fh", name:"Banded Scapula Retraction", sets:"3", reps:"6-10", load:"black band",
    musc:"Scapular retractors, lats",
    cue:"Anchor the band ~12in from the floor. Stack joints from prone, band under the armpits. Let the scapula extend, rotate the lats, then retract."},
@@ -709,17 +783,40 @@ const EX = [
    cue:"Cable arms in, set at about knee height. Opposite ankle to cable, come across and back. Watch the stack: kg on the LEFT, lbs on the RIGHT."}
 ];
 
+const SECT = {
+  s3:"Shoulders", f1:"Shoulders", f2:"Shoulders", r4:"Shoulders", r5:"Shoulders", y3:"Shoulders", z1:"Shoulders",
+  r1:"Back", r6:"Back", f6:"Back", f7:"Back", z2:"Back",
+  f8:"Chest & arms", z4:"Chest & arms",
+  f9:"Core", x4:"Core", x5:"Core", y4:"Core", z5:"Core",
+  r2:"Legs", f10:"Legs", f5:"Legs", z3:"Legs", r3:"Legs", x8:"Legs",
+  r7:"Posterior chain", y2:"Posterior chain", x7:"Posterior chain",
+  x3:"Glutes & hips", y1:"Glutes & hips", x6:"Glutes & hips", y5:"Glutes & hips", f4:"Glutes & hips"
+};
+const SECT_ORDER = ["Shoulders","Back","Chest & arms","Core","Legs","Posterior chain","Glutes & hips"];
+function sectOf(i){ return SECT[i.id] || "Other"; }
+
+const MAX_PICKS = 12;
+function picked(){ return state.todayPicks || []; }
+function isPicked(i){ return picked().indexOf(i.id) !== -1; }
+
 function effZone(i){ return (state.zoneOverrides && state.zoneOverrides[i.id]) || i.def; }
-function roomList(z){ return dedupe(EX.filter(i=>effZone(i)===z)); }
+function roomList(z){ return dedupe(EX.filter(i=>effZone(i)===z && isPicked(i))); }
 
 const COOL = [
-  {grp:"Lats / mid-back", how:"Child's pose with arms reached long, or overhead lat stretch against a wall", hold:"30–45 sec each"},
-  {grp:"Shoulders / rotator cuff", how:"Cross-body shoulder stretch, then doorway chest stretch", hold:"30 sec each side"},
-  {grp:"Quads / hip flexors", how:"Standing or kneeling quad and hip flexor stretch — couch stretch if you have time", hold:"30–45 sec each leg"},
-  {grp:"Glutes / hamstrings", how:"Seated or lying figure-4, then standing hamstring stretch", hold:"30–45 sec each side"},
-  {grp:"Calves", how:"Standing calf stretch against a wall or step", hold:"30 sec each leg"},
-  {grp:"Core / obliques", how:"Gentle supine spinal twist, both directions", hold:"30 sec each side"},
-  {grp:"Spine / mid-back", how:"Cat/Cow, slow through the full range, breathing with it", hold:"8-10 slow reps"}
+  {id:"c1", name:"Lats / mid-back", sets:"-", reps:"30-45 sec each", load:"stretch",
+   musc:"Lats, mid-back", cue:"Child's pose with arms reached long, or an overhead lat stretch against a wall."},
+  {id:"c2", name:"Shoulders / rotator cuff", sets:"-", reps:"30 sec each side", load:"stretch",
+   musc:"Shoulders, chest", cue:"Cross-body shoulder stretch, then a doorway chest stretch."},
+  {id:"c3", name:"Quads / hip flexors", sets:"-", reps:"30-45 sec each leg", load:"stretch",
+   musc:"Quads, hip flexors", cue:"Standing or kneeling quad and hip flexor stretch \u2014 couch stretch if you have time."},
+  {id:"c4", name:"Glutes / hamstrings", sets:"-", reps:"30-45 sec each side", load:"stretch",
+   musc:"Glutes, hamstrings", cue:"Seated or lying figure-4, then a standing hamstring stretch."},
+  {id:"c5", name:"Calves", sets:"-", reps:"30 sec each leg", load:"stretch",
+   musc:"Calves", cue:"Standing calf stretch against a wall or step."},
+  {id:"c6", name:"Core / obliques", sets:"-", reps:"30 sec each side", load:"stretch",
+   musc:"Abs, obliques", cue:"Gentle supine spinal twist, both directions."},
+  {id:"c7", name:"Spine / mid-back", sets:"-", reps:"8-10 slow reps", load:"stretch",
+   musc:"Spine mobility", cue:"Cat/Cow, slow through the full range, breathing with it."}
 ];
 
 /* Full exercise database for Surprise me — mirrors the workbook */
@@ -798,7 +895,7 @@ const elDate=$("dateOut"), elProg=$("progNum"), elFoot=$("footNote"),
       elPasteBox=$("pasteBox"), elPasteIn=$("pasteIn"),
       elPasteApply=$("pasteApply"), elPasteCancel=$("pasteCancel"),
       elSession=$("btnSession"), elElapsed=$("tElapsed"),
-      elRest30=$("btnRest30"), elRest60=$("btnRest60");
+      elRest30=$("btnRest30"), elRest60=$("btnRest60"), elSound=$("btnSound");
 
 /* ---------------- state ---------------- */
 const today = new Date();
@@ -808,16 +905,21 @@ const OLD_KEY = "session959:"+iso;
 const IDX = "session513x:index";
 const EVT = "session513x:events";
 const LAST = "session513x:last";
+const PICKS = "session513x:picks";
+const SETTINGS = "session513x:settings";
+const FAST = "session513x:fast";
 
 let state = { log:{}, surprise:[], mode:"Balanced Mix", zone:"Random",
               startedAt:"", endedAt:"", startedTs:0, energy:0, review:"",
               warmPicks:["wc_ell","wk_bird","wk_tippy","wm_swing"],  // always a core element in here
               coreSeeded:false,
-              pain:null, painNote:"", zoneOverrides:{} };
+              pain:null, painNote:"", zoneOverrides:{}, todayPicks:null };
 let events = [];   // treatments / flare-ups, kept across sessions
 let lasts = {};    // exercise id -> what she actually lifted last time
+let settings = { sound:true };
+let fasting = { startedTs:0, history:[] };
 let index = {};   // date -> lightweight summary, so history never re-reads every session
-let active = "warm";
+let active = "pick";
 let storageOK = true;
 
 /* Storage: try Claude's artifact storage first (works in the chat preview),
@@ -894,6 +996,20 @@ async function load(){
   if(rawEvt){ try{ events = JSON.parse(rawEvt) || []; }catch(e){ events = []; } }
   const rawLast = await Store.get(LAST);
   if(rawLast){ try{ lasts = JSON.parse(rawLast) || {}; }catch(e){ lasts = {}; } }
+  const rawFast = await Store.get(FAST);
+  if(rawFast){ try{ fasting = Object.assign(fasting, JSON.parse(rawFast)||{}); }catch(e){} }
+  const rawSet = await Store.get(SETTINGS);
+  if(rawSet){ try{ settings = Object.assign(settings, JSON.parse(rawSet)||{}); }catch(e){} }
+
+  // A new day starts with whatever she trained last time, so there is nothing
+  // to rebuild unless she wants to change it.
+  if(!Array.isArray(state.todayPicks)){
+    const rawPicks = await Store.get(PICKS);
+    let seed = [];
+    if(rawPicks){ try{ seed = JSON.parse(rawPicks) || []; }catch(e){ seed = []; } }
+    seed = seed.filter(id=>EX.some(x=>x.id===id)).slice(0, MAX_PICKS);
+    state.todayPicks = seed;
+  }
 
   // she asked for a core element in every warm-up: seed one the first time only,
   // then respect whatever she picks after that
@@ -972,6 +1088,11 @@ function save(){
       lasts[i.id] = { weight:wt, sets:(e.sets||"").trim(), reps:(e.reps||"").trim(), date:iso };
     });
     await Store.set(LAST, JSON.stringify(lasts));
+    if(Array.isArray(state.todayPicks) && state.todayPicks.length){
+      await Store.set(PICKS, JSON.stringify(state.todayPicks));
+    }
+    await Store.set(SETTINGS, JSON.stringify(settings));
+    await Store.set(FAST, JSON.stringify(fasting));
     if(okNow !== storageOK){ storageOK = okNow; }
     if(okNow) setChip("ok","saved "+hhmm(new Date()));
     else setChip("bad","not saving");
@@ -988,12 +1109,83 @@ function entry(id){
 function trackable(){
   return [
     ...selectedWarm().map(x=>({...x, zone:"warm"})),
-    ...SERRATUS.map(x=>({...x, zone:"cool"})),
+    ...COOL.map(x=>({...x, zone:"cool"})),
     ...roomList("fh").map(x=>({...x, zone:"fh"})),
     ...roomList("wr").map(x=>({...x, zone:"wr"})),
     ...state.surprise.map(x=>({...x, zone:"surp"}))
   ];
 }
+
+/* ---------------- noise ---------------- */
+let audioCtx = null;
+function tone(freq, at, dur, peak){
+  const o = audioCtx.createOscillator(), g = audioCtx.createGain();
+  o.type = "triangle"; o.frequency.value = freq;
+  g.gain.setValueAtTime(0.0001, at);
+  g.gain.exponentialRampToValueAtTime(peak, at + 0.012);
+  g.gain.exponentialRampToValueAtTime(0.0001, at + dur);
+  o.connect(g); g.connect(audioCtx.destination);
+  o.start(at); o.stop(at + dur + 0.02);
+  const o2 = audioCtx.createOscillator(), g2 = audioCtx.createGain();
+  o2.type = "sine"; o2.frequency.value = freq * 2;
+  g2.gain.setValueAtTime(0.0001, at);
+  g2.gain.exponentialRampToValueAtTime(peak * 0.35, at + 0.010);
+  g2.gain.exponentialRampToValueAtTime(0.0001, at + dur * 0.6);
+  o2.connect(g2); g2.connect(audioCtx.destination);
+  o2.start(at); o2.stop(at + dur + 0.02);
+}
+
+function audioReady(){
+  try{
+    if(!audioCtx){
+      const AC = window.AudioContext || window.webkitAudioContext;
+      if(!AC) return false;
+      audioCtx = new AC();
+    }
+    if(audioCtx.state === "suspended") audioCtx.resume();
+    return true;
+  }catch(e){ return false; }
+}
+
+/* Warm marimba-ish notes rather than a synthesised voice. */
+function chime(kind){
+  if(!audioReady()) return;
+  const t = audioCtx.currentTime;
+  if(kind === "finale"){
+    [523.25, 659.25, 783.99, 1046.5, 1318.5].forEach((f,k)=> tone(f, t + k*0.12, 0.95, 0.22));
+  } else if(kind === "zone"){
+    [659.25, 987.77].forEach((f,k)=> tone(f, t + k*0.10, 0.55, 0.20));
+  } else {
+    [783.99, 1174.66].forEach((f,k)=> tone(f, t + k*0.075, 0.38, 0.17));
+  }
+}
+
+function makeNoise(kind){
+  if(!settings.sound) return;
+  chime(kind);
+}
+
+function paintSound(){
+  if(!elSound) return;
+  elSound.classList.toggle("off", !settings.sound);
+  elSound.innerHTML = settings.sound ? "&#128266;" : "&#128263;";
+}
+
+/* ---------------- fasting timer ---------------- */
+function fastElapsedMs(){ return fasting.startedTs ? (Date.now() - fasting.startedTs) : 0; }
+function hms(ms){
+  const sec=Math.max(0,Math.floor(ms/1000));
+  const h=Math.floor(sec/3600), m=Math.floor((sec%3600)/60), ss=sec%60;
+  return h+":"+String(m).padStart(2,"0")+":"+String(ss).padStart(2,"0");
+}
+function fastHoursText(ms){
+  const h=ms/3600000;
+  return (h>=10 ? h.toFixed(0) : h.toFixed(1))+" h";
+}
+setInterval(()=>{
+  const el=document.getElementById("fastClock");
+  if(el && fasting.startedTs) el.textContent=hms(fastElapsedMs());
+},1000);
 
 /* ---------------- encouragement ---------------- */
 const CHEERS = [
@@ -1017,18 +1209,32 @@ function cheer(msg){
 function cheerFor(zoneId){
   const items = trackable();
   const all = items.length && items.every(i=>entry(i.id).done);
-  if(all){ cheer("Session complete. Redline."); return; }
+  if(all){ cheer("Session complete."); makeNoise("finale"); finale(); return; }
 
   const zone = ZONES.find(z=>z.id===zoneId);
   const inZone = items.filter(i=>i.zone===zoneId);
   if(zone && inZone.length && inZone.every(i=>entry(i.id).done)){
     cheer(zone.title + " done!");
+    makeNoise("zone");
     return;
   }
   let n = Math.floor(Math.random()*CHEERS.length);
   if(n === lastCheer) n = (n+1) % CHEERS.length;
   lastCheer = n;
   cheer(CHEERS[n]);
+  makeNoise("tick");
+}
+
+function finale(){
+  const el=document.getElementById("finale");
+  if(!el || el.classList.contains("show")) return;
+  const s0=summary();
+  document.getElementById("finaleSub").textContent =
+    "Everything ticked \u2014 warm-up, lifts and stretches.";
+  document.getElementById("finaleStats").textContent =
+    [s0.done+" exercises", durationText()!=="\u2014" ? durationText() : null].filter(Boolean).join("  \u00b7  ");
+  el.classList.add("show");
+  if(navigator.vibrate){ try{ navigator.vibrate([90,60,90,60,180]); }catch(e){} }
 }
 
 /* ---------------- session & rest timers ---------------- */
@@ -1087,6 +1293,13 @@ function runRest(btn, secs){
   restIv=setInterval(tick,1000);
 }
 elRest30.dataset.label="30s"; elRest60.dataset.label="1 min";
+elSound.onclick=()=>{
+  settings.sound = !settings.sound;
+  paintSound(); save();
+  if(settings.sound) makeNoise("tick");
+  else toast("Sound off");
+};
+
 elRest30.onclick=()=>runRest(elRest30,30);
 elRest60.onclick=()=>runRest(elRest60,60);
 
@@ -1123,10 +1336,10 @@ function renderTabs(){
   tabs.innerHTML = "";
   ZONES.forEach(z=>{
     const b=document.createElement("button");
-    b.className="tab"; b.type="button"; b.role="tab";
+    b.className="tab"+(z.id==="cool"?" coolzone":""); b.type="button"; b.role="tab";
     b.setAttribute("aria-selected", z.id===active ? "true":"false");
     let count="";
-    if(z.id!=="body" && z.id!=="rev"){
+    if(z.id!=="body" && z.id!=="rev" && z.id!=="pick"){
       const items = trackable().filter(i=>i.zone===z.id);
       const d = items.filter(i=>entry(i.id).done).length;
       count = d+"/"+items.length;
@@ -1151,7 +1364,7 @@ const CHECK='<svg viewBox="0 0 20 20" fill="none"><path d="M4 10.5l4 4 8-9" stro
 function rowEl(item){
   const e = entry(item.id);
   const row=document.createElement("div");
-  row.className="row"+(e.done?" done":"")+(e._open?" open":"");
+  row.className="row"+(e.done?" done":"")+(e._open?" open":"")+(String(item.id).charAt(0)==="c"&&item.load==="stretch"?" cooldown":"");
 
   const L = lasts[item.id];
   const workingLoad = (L && L.weight) ? L.weight : item.load;
@@ -1278,7 +1491,7 @@ function roll(){
 
 /* ---------------- main render ---------------- */
 function render(){
-  renderHead(); renderTabs(); paintTimer();
+  renderHead(); renderTabs(); paintTimer(); paintSound();
   const z = ZONES.find(x=>x.id===active);
   const main=elMain;
   main.innerHTML="";
@@ -1347,8 +1560,15 @@ function render(){
     });
   }
   if(active==="fh" || active==="wr"){
-    const src = EX.filter(i=>effZone(i)===active);
+    const src = EX.filter(i=>effZone(i)===active && isPicked(i));
     dedupe(src).forEach(i=>main.appendChild(rowEl(i)));
+    if(!dedupe(src).length){
+      const e0=document.createElement("div"); e0.className="empty";
+      e0.textContent = picked().length
+        ? "Nothing picked for this room today."
+        : "No exercises picked yet \u2014 head to the Pick tab and build today's session.";
+      main.appendChild(e0);
+    }
     const skipped = dupesIn(src);
     if(skipped.length){
       const n=document.createElement("div"); n.className="skipped";
@@ -1387,7 +1607,92 @@ function render(){
     }
   }
 
+  if(active==="pick"){
+    const n=picked().length;
+    const bar=document.createElement("div"); bar.className="pickbar"+(n>=MAX_PICKS?" full":"");
+    bar.innerHTML='<b></b><span></span>';
+    bar.querySelector("b").textContent=n+" / "+MAX_PICKS;
+    bar.querySelector("span").textContent = n>=MAX_PICKS ? "that's a full session"
+                                          : (n===0 ? "nothing picked yet" : "picked for today");
+    main.appendChild(bar);
+
+    const acts=document.createElement("div"); acts.className="pickacts";
+    const clr=document.createElement("button"); clr.type="button"; clr.textContent="Clear all";
+    clr.onclick=()=>{ state.todayPicks=[]; save(); render(); };
+    acts.appendChild(clr);
+    main.appendChild(acts);
+
+    SECT_ORDER.forEach(sec=>{
+      const inSec=EX.filter(i=>sectOf(i)===sec);
+      if(!inSec.length) return;
+      const done=inSec.filter(isPicked).length;
+      const gl=document.createElement("div"); gl.className="grouplab";
+      gl.textContent = sec + (done? "  \u00b7  "+done+" picked" : "");
+      main.appendChild(gl);
+      const wrap=document.createElement("div"); wrap.className="chips";
+      inSec.forEach(i=>{
+        const on=isPicked(i);
+        const L=lasts[i.id];
+        const c=document.createElement("button");
+        c.type="button"; c.className="chipsel"+(on?" on":"");
+        c.innerHTML='<b></b><span></span>';
+        c.querySelector("b").textContent=i.name;
+        c.querySelector("span").textContent=(L&&L.weight)?L.weight:(i.load||"");
+        c.onclick=()=>{
+          const p2=picked().slice();
+          const at=p2.indexOf(i.id);
+          if(at===-1){
+            if(p2.length>=MAX_PICKS){ toast("That's 12 already. Drop one first."); return; }
+            p2.push(i.id);
+          } else { p2.splice(at,1); }
+          state.todayPicks=p2; save(); render();
+        };
+        wrap.appendChild(c);
+      });
+      main.appendChild(wrap);
+    });
+  }
+
   if(active==="body"){
+    // --- fasting timer ---
+    const fb=document.createElement("div"); fb.className="fastbox"+(fasting.startedTs?" on":"");
+    fb.innerHTML =
+      '<div class="fasthead"><label>Fasting</label><span id="fastSince"></span></div>'+
+      '<div class="fastclock" id="fastClock"></div>'+
+      '<button type="button" class="fastbtn" id="fastBtn"></button>';
+    main.appendChild(fb);
+    const fc=fb.querySelector("#fastClock"), fbtn=fb.querySelector("#fastBtn"), fsince=fb.querySelector("#fastSince");
+    fc.textContent = fasting.startedTs ? hms(fastElapsedMs()) : "0:00:00";
+    fsince.textContent = fasting.startedTs
+      ? "since "+new Date(fasting.startedTs).toLocaleString("en-CA",{weekday:"short",hour:"2-digit",minute:"2-digit"})
+      : "not started";
+    fbtn.textContent = fasting.startedTs ? "End fast" : "Start fast";
+    fbtn.onclick=()=>{
+      if(fasting.startedTs){
+        const ms=fastElapsedMs();
+        fasting.history = (fasting.history||[]).concat([{start:fasting.startedTs, end:Date.now(), ms:ms}]).slice(-30);
+        fasting.startedTs = 0;
+        save(); render();
+        toast("Fast ended at "+fastHoursText(ms)+".");
+      } else {
+        fasting.startedTs = Date.now();
+        save(); render();
+      }
+    };
+
+    const hist=(fasting.history||[]).slice().reverse().slice(0,5);
+    if(hist.length){
+      const hl=document.createElement("div"); hl.className="fasthist";
+      hist.forEach(f=>{
+        const r=document.createElement("div"); r.className="fastrow";
+        r.innerHTML='<span></span><b></b>';
+        r.querySelector("span").textContent=new Date(f.start).toLocaleDateString("en-CA",{month:"short",day:"numeric"});
+        r.querySelector("b").textContent=fastHoursText(f.ms);
+        hl.appendChild(r);
+      });
+      main.appendChild(hl);
+    }
+
     // --- today's shoulder reading ---
     const shot = events.filter(e=>/cortisol/i.test(e.label)).sort((a,b)=>a.date<b.date?1:-1)[0];
     if(shot){
@@ -1567,23 +1872,7 @@ function render(){
   }
 
   if(active==="cool"){
-    const sl=document.createElement("div"); sl.className="grouplab";
-    sl.textContent="Serratus reset — from your RMT";
-    main.appendChild(sl);
-    SERRATUS.forEach(i=>main.appendChild(rowEl(i)));
-
-    const sh=document.createElement("div"); sh.className="grouplab";
-    sh.textContent="Stretches for what you worked";
-    main.appendChild(sh);
-
-    COOL.forEach(s=>{
-      const d=document.createElement("div"); d.className="stretch";
-      d.innerHTML='<div class="grp"></div><div class="how"></div><div class="hold"></div>';
-      d.querySelector(".grp").textContent=s.grp;
-      d.querySelector(".how").textContent=s.how;
-      d.querySelector(".hold").textContent=s.hold;
-      main.appendChild(d);
-    });
+    COOL.forEach(i=>main.appendChild(rowEl(i)));
   }
 
   updateFootNote();
@@ -1689,7 +1978,7 @@ async function buildPayload(){
     const raw=await Store.get("session513x:"+dt);
     if(raw){ try{ sessions[dt]=JSON.parse(raw); }catch(e){} }
   }
-  return { app:"session513x", version:3, exported:iso, index:index, sessions:sessions, events:events, lasts:lasts };
+  return { app:"session513x", version:3, exported:iso, index:index, sessions:sessions, events:events, lasts:lasts, fasting:fasting };
 }
 
 /* Merge an incoming payload rather than clobbering: newer wins per session,
@@ -1705,12 +1994,21 @@ async function applyPayload(incoming){
     index = Object.assign({}, index, incoming.index||{});
     await Store.set(IDX, JSON.stringify(index));
     if(Array.isArray(incoming.events)){ events = incoming.events; await Store.set(EVT, JSON.stringify(events)); }
+    if(incoming.fasting && typeof incoming.fasting==="object"){
+      fasting = Object.assign({startedTs:0,history:[]}, incoming.fasting);
+      await Store.set(FAST, JSON.stringify(fasting));
+    }
     if(incoming.lasts && typeof incoming.lasts==="object"){
       Object.keys(incoming.lasts).forEach(k=>{
         const mine=lasts[k], theirs=incoming.lasts[k];
         if(!mine || !mine.date || (theirs.date && theirs.date >= mine.date)) lasts[k]=theirs;
       });
       await Store.set(LAST, JSON.stringify(lasts));
+    if(Array.isArray(state.todayPicks) && state.todayPicks.length){
+      await Store.set(PICKS, JSON.stringify(state.todayPicks));
+    }
+    await Store.set(SETTINGS, JSON.stringify(settings));
+    await Store.set(FAST, JSON.stringify(fasting));
     }
     const mine=incoming.sessions[iso];
     if(mine) state=Object.assign({log:{},surprise:[],mode:"Balanced Mix",zone:"Random",
@@ -1796,6 +2094,10 @@ window.addEventListener("beforeunload", e=>{
 });
 
 /* ---------------- boot ---------------- */
+document.getElementById("finaleClose").onclick=()=>{
+  document.getElementById("finale").classList.remove("show");
+};
+
 (async ()=>{
   const warn = document.getElementById("jsWarn");
   if(warn) warn.style.display = "none";   // scripts run here, so hide the notice
