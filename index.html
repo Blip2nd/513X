@@ -634,7 +634,7 @@ textarea{
 
 const ZONES = [
   {id:"pick",  label:"Pick", short:"Pick",           title:"Build today",
-   sub:"Choose up to 12. Tomorrow starts with whatever you pick today.", session:"Pick"},
+   sub:"Choose up to 10. Tomorrow starts with whatever you pick today.", session:"Pick"},
   {id:"warm",  label:"Warm-up", short:"Warm",       title:"Warm-up",
    sub:"Pick what you feel like today. Tap to add or drop anything.", session:"Warm-up"},
   {id:"fh",    label:"Field House", short:"Field House", title:"Field House",
@@ -721,7 +721,7 @@ const EX = [
 
   // ---- originally Weight Room ----
   {id:"r1", def:"wr", name:"Neutral Grip Lat Pulldown", sets:"4", reps:"12", load:"60 lbs", musc:"Lats, biceps"},
-  {id:"r2", def:"wr", name:"Leg Press", sets:"4", reps:"12", load:"90 lbs", musc:"Quads, glutes, hamstrings"},
+  {id:"r2", def:"wr", name:"Leg Press", sets:"4", reps:"12", load:"110 lbs", musc:"Quads, glutes, hamstrings"},
   {id:"r3", def:"wr", name:"Seated Calf Raise", sets:"3", reps:"12", load:"20 lbs", musc:"Calves", cue:"Last time: didn't like free weights."},
   {id:"r4", def:"wr", name:"Seated Dumbbell Shoulder Press", sets:"3", reps:"12", load:"10 lbs", musc:"Shoulders, triceps", cue:"Try 15 lbs this session."},
   {id:"r5", def:"wr", name:"\u201CRow\u201D Shoulder Ext, cable unilateral, sitting", sets:"3", reps:"12", load:"20 lbs", musc:"Rotator cuff, rear delts",
@@ -780,7 +780,27 @@ const EX = [
 
   {id:"y5", def:"wr", name:"Dual Cable Cross Kickbacks", sets:"3-4", reps:"8-10 each leg", load:"7-10 lbs",
    musc:"Glutes, hamstrings",
-   cue:"Cable arms in, set at about knee height. Opposite ankle to cable, come across and back. Watch the stack: kg on the LEFT, lbs on the RIGHT."}
+   cue:"Cable arms in, set at about knee height. Opposite ankle to cable, come across and back. Watch the stack: kg on the LEFT, lbs on the RIGHT."},
+
+  {id:"m1", def:"wr", name:"Hip Adductor Machine", sets:"3", reps:"12", load:"50 lbs",
+   musc:"Adductors, hip stability", cue:"Next time try 65 lbs."},
+
+  {id:"n1", def:"wr", name:"Face Pull (dual cable)", sets:"3", reps:"12-15", load:"10 lbs",
+   musc:"Rear delts, rotator cuff, upper back", cue:"Rope at face height, elbows high, pull apart toward the ears."},
+  {id:"n2", def:"wr", name:"Cable External Rotation", sets:"3", reps:"12 each side", load:"5 lbs",
+   musc:"Rotator cuff", cue:"Elbow pinned at your side, slow out, slower back."},
+  {id:"n3", def:"fh", name:"Wall Slides (forearms on wall)", sets:"2", reps:"10", load:"bodyweight",
+   musc:"Serratus, lower traps", cue:"Forearms on the wall, slide up, keep ribs down."},
+  {id:"n4", def:"fh", name:"Prone Y Raise", sets:"2", reps:"8", load:"bodyweight",
+   musc:"Lower traps, rear delts", cue:"Thumbs up, lift from the shoulder blades, no shrugging."},
+  {id:"n5", def:"fh", name:"Chin Tucks", sets:"2", reps:"10, hold 3 sec", load:"bodyweight",
+   musc:"Deep neck flexors", cue:"Slide the head straight back, double chin, no nodding."},
+  {id:"n6", def:"fh", name:"Isometric Neck Holds", sets:"1", reps:"10 sec each direction", load:"hand pressure",
+   musc:"Neck stabilizers", cue:"Press head into hand, front, back, both sides. Light effort, no movement."},
+  {id:"n7", def:"fh", name:"Upper Trap Stretch", sets:"2", reps:"30 sec each side", load:"stretch",
+   musc:"Upper traps, neck", cue:"Ear toward shoulder, opposite arm relaxed down."},
+  {id:"n8", def:"fh", name:"Levator Scapulae Stretch", sets:"2", reps:"30 sec each side", load:"stretch",
+   musc:"Neck, upper back", cue:"Nose toward the armpit, gentle hand weight."}
 ];
 
 const SECT = {
@@ -790,12 +810,12 @@ const SECT = {
   f9:"Core", x4:"Core", x5:"Core", y4:"Core", z5:"Core",
   r2:"Legs", f10:"Legs", f5:"Legs", z3:"Legs", r3:"Legs", x8:"Legs",
   r7:"Posterior chain", y2:"Posterior chain", x7:"Posterior chain",
-  x3:"Glutes & hips", y1:"Glutes & hips", x6:"Glutes & hips", y5:"Glutes & hips", f4:"Glutes & hips"
+  x3:"Glutes & hips", m1:"Glutes & hips", n1:"Shoulders", n2:"Shoulders", n3:"Shoulders", n4:"Shoulders", n5:"Neck", n6:"Neck", n7:"Neck", n8:"Neck", y1:"Glutes & hips", x6:"Glutes & hips", y5:"Glutes & hips", f4:"Glutes & hips"
 };
-const SECT_ORDER = ["Shoulders","Back","Chest & arms","Core","Legs","Posterior chain","Glutes & hips"];
+const SECT_ORDER = ["Shoulders","Back","Chest & arms","Core","Legs","Posterior chain","Glutes & hips","Neck"];
 function sectOf(i){ return SECT[i.id] || "Other"; }
 
-const MAX_PICKS = 12;
+const MAX_PICKS = 10;
 function picked(){ return state.todayPicks || []; }
 function isPicked(i){ return picked().indexOf(i.id) !== -1; }
 
@@ -832,7 +852,7 @@ const DB = [
   {n:"Leg Extension",z:"Legs",s:"2",r:"10",l:"30 lbs",m:"Quads"},
   {n:"Leg Curl",z:"Legs",s:"TBD",r:"TBD",l:"60 lbs",m:"Hamstrings"},
   {n:"Walking Lunges",z:"Legs",s:"3",r:"5/5",l:"bodyweight",m:"Quads, glutes, hamstrings"},
-  {n:"Leg Press",z:"Legs",s:"4",r:"12",l:"90 lbs",m:"Quads, glutes, hamstrings"},
+  {n:"Leg Press",z:"Legs",s:"4",r:"12",l:"110 lbs",m:"Quads, glutes, hamstrings"},
   {n:"Seated Calf Raise",z:"Legs",s:"3",r:"12",l:"20 lbs",m:"Calves"},
   {n:"Trap Bar Deadlift",z:"Legs",s:"TBD",r:"TBD",l:"TBD",m:"Glutes, hamstrings, lower back"},
   {n:"Bulgarian Split Squat",z:"Legs",s:"3",r:"12, hold 3 sec",l:"bodyweight",m:"Quads, glutes (unilateral)"},
@@ -1642,7 +1662,7 @@ function render(){
           const p2=picked().slice();
           const at=p2.indexOf(i.id);
           if(at===-1){
-            if(p2.length>=MAX_PICKS){ toast("That's 12 already. Drop one first."); return; }
+            if(p2.length>=MAX_PICKS){ toast("That's 10 already. Drop one first."); return; }
             p2.push(i.id);
           } else { p2.splice(at,1); }
           state.todayPicks=p2; save(); render();
