@@ -142,8 +142,23 @@ input,button,select,textarea{font-family:inherit}
 .tsound.off{color:var(--dimmer);opacity:.55}
 .trest.running{border-color:var(--amber);color:var(--amber);background:#241C08}
 .telapsed{
-  flex:1;text-align:center;font-family:var(--display);font-weight:700;
+  /* min-width:0 lets a long H:MM:SS shrink instead of shoving the
+     sound button off the right edge. */
+  flex:1 1 auto;min-width:0;overflow:hidden;white-space:nowrap;
+  text-align:center;font-family:var(--display);font-weight:700;
   font-size:22px;letter-spacing:.02em;font-variant-numeric:tabular-nums;color:var(--ink);
+}
+@media (max-width:400px){
+  .timerbar{gap:5px;padding-left:10px;padding-right:10px}
+  .telapsed{font-size:19px}
+  .tbtn{padding-left:9px;padding-right:9px;font-size:13px}
+  .trest{min-width:52px}
+  .tsound{min-width:36px}
+}
+@media (max-width:340px){
+  .telapsed{font-size:17px}
+  .tbtn{padding-left:7px;padding-right:7px;font-size:12px}
+  .trest{min-width:46px}
 }
 .telapsed.idle{color:var(--dimmer)}
 
@@ -161,6 +176,11 @@ input,button,select,textarea{font-family:inherit}
   border-radius:6px;margin-bottom:8px;overflow:hidden;
 }
 .row.done{border-color:#2E5140;background:#141E19}
+.worked{
+  border:1px solid var(--violet-deep);background:#1B1630;border-radius:6px;
+  padding:9px 11px;margin-bottom:9px;font-size:12.5px;color:#C4B5FD;line-height:1.35;
+}
+.row.offday{opacity:.52}
 .row.cooldown.done{border-color:var(--violet-deep);background:#1B1630}
 .row.cooldown.done .box{background:var(--violet);border-color:var(--violet)}
 .row.cooldown.done .tick{border-right-color:var(--violet-deep)}
@@ -230,6 +250,21 @@ textarea{
   font-variant-numeric:tabular-nums;
 }
 .rest.running{border-color:var(--amber);color:var(--amber)}
+.howto{margin-top:8px;border:1px solid var(--line);border-radius:5px;padding:0 10px}
+.howto summary{
+  cursor:pointer;padding:9px 0;list-style:none;
+  font-family:var(--display);font-size:12px;letter-spacing:.14em;
+  text-transform:uppercase;color:var(--dim);
+}
+.howto summary::-webkit-details-marker{display:none}
+.howto summary::after{content:" +";color:var(--dimmer)}
+.howto[open] summary::after{content:" \2212"}
+.howto p{margin:0 0 8px;font-size:13.5px;line-height:1.45;color:var(--ink)}
+.howto .how-coach{color:var(--amber)}
+.how-link{
+  display:inline-block;margin:0 0 10px;font-size:13px;color:var(--violet);
+  text-decoration:none;border-bottom:1px solid var(--violet-deep);
+}
 .zoneswitch{display:flex;align-items:center;gap:6px;margin-top:8px}
 .zoneswitch label{
   font-family:var(--display);font-size:11px;letter-spacing:.16em;text-transform:uppercase;
@@ -267,14 +302,38 @@ textarea{
 .stretch .hold{font-family:var(--display);font-size:14px;letter-spacing:.08em;color:var(--amber);margin-top:4px;font-variant-numeric:tabular-nums}
 
 /* ---------- review tab ---------- */
-.revtimes{display:grid;grid-template-columns:1fr 1fr 1fr;gap:7px;margin-bottom:10px}
+.revtimes{display:grid;grid-template-columns:1fr 1fr;gap:9px;margin-bottom:8px}
+.nudge-row{display:grid;grid-template-columns:repeat(4,1fr);gap:3px;margin-top:5px}
+.nudge-row button{
+  background:var(--panel);border:1px solid var(--line);color:var(--dim);
+  border-radius:4px;padding:8px 0 7px;cursor:pointer;
+  font-family:var(--display);font-size:13px;letter-spacing:.02em;
+  font-variant-numeric:tabular-nums;
+}
+.nudge-row button:active{background:var(--amber);border-color:var(--amber);color:#0E1217}
+.durline{
+  display:flex;align-items:baseline;gap:10px;margin-bottom:10px;
+  border:1px solid var(--line);border-radius:6px;padding:8px 12px;
+}
+.durline label{
+  font-family:var(--display);font-size:11px;letter-spacing:.16em;
+  text-transform:uppercase;color:var(--dimmer);
+}
+.fixend{
+  display:block;width:100%;text-align:left;cursor:pointer;margin-bottom:10px;
+  border:1px solid var(--amber);background:#241C08;border-radius:6px;padding:11px 12px;
+}
+.fixend b{
+  display:block;font-family:var(--display);font-size:16px;color:var(--amber);letter-spacing:.02em;
+}
+.fixend span{display:block;font-size:13px;color:var(--ink);margin-top:2px;line-height:1.35}
 .revtimes input[type=time]{
   width:100%;background:var(--panel);border:1px solid var(--line);color:var(--ink);
   border-radius:4px;padding:9px 8px;font-size:16px;font-variant-numeric:tabular-nums;
 }
 .dur{
-  font-family:var(--display);font-size:19px;font-weight:600;color:var(--amber);
-  padding:8px 4px;font-variant-numeric:tabular-nums;
+  font-family:var(--display);font-size:22px;font-weight:700;color:var(--amber);
+  font-variant-numeric:tabular-nums;
 }
 .energy{margin:2px 0 10px}
 .energy>label{
@@ -315,6 +374,20 @@ textarea{
 .hnote{font-size:13px;color:var(--ink);margin-top:5px;line-height:1.35}
 
 /* ---------- warm-up chooser ---------- */
+.motto{
+  position:relative;border:1px solid var(--violet-deep);border-radius:6px;
+  background:linear-gradient(135deg,#1B1630,#141A22);
+  padding:13px 34px 13px 14px;margin-bottom:11px;
+}
+.motto b{
+  display:block;font-family:var(--display);font-weight:700;font-size:19px;
+  line-height:1.15;color:#C4B5FD;letter-spacing:.01em;
+}
+.motto span{display:block;margin-top:5px;font-size:13.5px;line-height:1.45;color:var(--dim)}
+.motto-x{
+  position:absolute;top:7px;right:8px;background:transparent;border:0;
+  color:var(--dimmer);font-size:19px;line-height:1;cursor:pointer;padding:3px 5px;
+}
 .pickbar{
   display:flex;align-items:baseline;gap:10px;
   border:1px solid var(--line);border-radius:6px;padding:11px 13px;margin-bottom:9px;
@@ -323,6 +396,24 @@ textarea{
 .pickbar span{font-size:13px;color:var(--dim)}
 .pickbar.full{border-color:var(--green)}
 .pickbar.full b{color:var(--green)}
+.addex{background:var(--panel);border:1px solid var(--line);border-radius:6px;padding:11px;margin-bottom:9px}
+.addex input, .addex select{
+  width:100%;background:var(--asphalt);border:1px solid var(--line);color:var(--ink);
+  border-radius:4px;padding:10px 9px;font-size:15px;
+}
+.addex-row{display:grid;grid-template-columns:1fr 1fr 1fr;gap:6px;margin-top:6px}
+.addex-row:last-of-type{grid-template-columns:1fr 1fr}
+.addex #cxAdd{
+  width:100%;margin-top:8px;background:var(--amber);border:0;color:#0E1217;border-radius:5px;
+  padding:12px;cursor:pointer;
+  font-family:var(--display);font-weight:700;font-size:14px;letter-spacing:.12em;text-transform:uppercase;
+}
+.minelist{margin-bottom:6px}
+.minerow{
+  display:flex;justify-content:space-between;align-items:center;gap:8px;
+  padding:8px 2px;border-bottom:1px solid var(--line);font-size:13.5px;color:var(--dim);
+}
+.minerow button{background:transparent;border:0;color:var(--dimmer);font-size:20px;line-height:1;cursor:pointer;padding:0 4px}
 .pickacts{display:flex;gap:8px;margin-bottom:4px}
 .pickacts button{
   flex:1;background:transparent;border:1px solid var(--line);color:var(--dim);
@@ -634,7 +725,7 @@ textarea{
 
 const ZONES = [
   {id:"pick",  label:"Pick", short:"Pick",           title:"Build today",
-   sub:"Choose up to 10. Tomorrow starts with whatever you pick today.", session:"Pick"},
+   sub:"Choose up to 12. Tomorrow starts with whatever you pick today.", session:"Pick"},
   {id:"warm",  label:"Warm-up", short:"Warm",       title:"Warm-up",
    sub:"Pick what you feel like today. Tap to add or drop anything.", session:"Warm-up"},
   {id:"fh",    label:"Field House", short:"Field House", title:"Field House",
@@ -653,35 +744,35 @@ const ZONES = [
 
 /* Warm-up is now a menu she picks from, not a fixed list. */
 const WARM_LIB = [
-  {id:"wc_ell",  group:"Cardio",   name:"Elliptical",              sets:"1", reps:"15 min", load:"easy pace", musc:"Full body, cardio"},
-  {id:"wc_row",  group:"Cardio",   name:"Rower",                   sets:"1", reps:"10 min", load:"steady",    musc:"Back, legs, cardio"},
-  {id:"wc_bike", group:"Cardio",   name:"Spin bike",               sets:"1", reps:"12 min", load:"easy pace", musc:"Quads, cardio"},
-  {id:"wc_air",  group:"Cardio",   name:"Air / assault bike",      sets:"1", reps:"8 min",  load:"easy-moderate", musc:"Full body, cardio"},
-  {id:"wc_tread",group:"Cardio",   name:"Treadmill incline walk",  sets:"1", reps:"12 min", load:"incline 8-10%", musc:"Glutes, calves, cardio"},
-  {id:"wc_stair",group:"Cardio",   name:"Stair climber",           sets:"1", reps:"10 min", load:"steady",    musc:"Glutes, quads, cardio"},
-  {id:"wc_ski",  group:"Cardio",   name:"Ski erg",                 sets:"1", reps:"8 min",  load:"steady",    musc:"Lats, core, cardio"},
-  {id:"wc_rope", group:"Cardio",   name:"Jump rope",               sets:"3", reps:"60 sec", load:"bodyweight",musc:"Calves, coordination"},
-  {id:"wc_sled", group:"Cardio",   name:"Sled push (Sked)",        sets:"2", reps:"8-10",   load:"25 lbs",    musc:"Quads, glutes, cardio"},
+  {id:"wc_ell",  group:"Cardio",   name:"Elliptical", how:"Easy conversational pace. You should be able to talk the whole time.",              sets:"1", reps:"15 min", load:"easy pace", musc:"Full body, cardio"},
+  {id:"wc_row",  group:"Cardio",   name:"Rower", how:"Legs, then back, then arms on the drive. Reverse that order on the recovery.",                   sets:"1", reps:"10 min", load:"steady",    musc:"Back, legs, cardio"},
+  {id:"wc_bike", group:"Cardio",   name:"Spin bike", how:"Light resistance, smooth cadence. Enough to warm up, not to tire the legs.",               sets:"1", reps:"12 min", load:"easy pace", musc:"Quads, cardio"},
+  {id:"wc_air",  group:"Cardio",   name:"Air / assault bike", how:"Arms and legs together, easy to moderate. Rises the heart rate fast, so keep it short.",      sets:"1", reps:"8 min",  load:"easy-moderate", musc:"Full body, cardio"},
+  {id:"wc_tread",group:"Cardio",   name:"Treadmill incline walk", how:"Brisk walk on an 8-10% incline. Stand tall, no leaning on the handles.",  sets:"1", reps:"12 min", load:"incline 8-10%", musc:"Glutes, calves, cardio"},
+  {id:"wc_stair",group:"Cardio",   name:"Stair climber", how:"Steady pace, full foot on each step, upright posture.",           sets:"1", reps:"10 min", load:"steady",    musc:"Glutes, quads, cardio"},
+  {id:"wc_ski",  group:"Cardio",   name:"Ski erg", how:"Hinge at the hips and pull the handles past them, driving with the lats and core.",                 sets:"1", reps:"8 min",  load:"steady",    musc:"Lats, core, cardio"},
+  {id:"wc_rope", group:"Cardio",   name:"Jump rope", how:"Small bounces off the balls of the feet, wrists doing the turning, not the arms.",               sets:"3", reps:"60 sec", load:"bodyweight",musc:"Calves, coordination"},
+  {id:"wc_sled", group:"Cardio",   name:"Sled push (Sked)", how:"Low body angle, arms locked, drive with short powerful steps.",        sets:"2", reps:"8-10",   load:"25 lbs",    musc:"Quads, glutes, cardio"},
 
-  {id:"wm_hipopen",group:"Mobility",name:"Hip openers over a box",     sets:"2", reps:"10 each side", load:"bodyweight", musc:"Hip rotators", same:"hip openers"},
-  {id:"wk_latdb",group:"Core",     name:"Lateral banded deadbug",   sets:"3", reps:"8-12 each side",load:"red band",musc:"Deep core, obliques", same:"lateral deadbug"},
-  {id:"wk_bird", group:"Core",     name:"Bird dog",                sets:"2", reps:"8 each side",   load:"bodyweight", musc:"Deep core, spinal stability"},
-  {id:"wk_tippy",group:"Core",     name:"Tippy-toe plank",         sets:"2", reps:"30 sec",         load:"bodyweight", musc:"Deep core, shoulders"},
-  {id:"wk_dead", group:"Core",     name:"Dead bug",                sets:"2", reps:"10 each side",   load:"bodyweight", musc:"Deep core, anti-extension"},
-  {id:"wk_crunch",group:"Core",    name:"Crunches",                 sets:"2", reps:"20",            load:"bodyweight", musc:"Abs", same:"crunch"},
-  {id:"wk_hollow",group:"Core",    name:"Hollow hold",             sets:"2", reps:"20 sec",         load:"bodyweight", musc:"Deep core"},
-  {id:"wk_side", group:"Core",     name:"Side plank",              sets:"2", reps:"20 sec each side",load:"bodyweight",musc:"Obliques, lateral core"},
-  {id:"wk_bridge",group:"Core",    name:"Glute bridge march",      sets:"2", reps:"10 each side",   load:"bodyweight", musc:"Glutes, deep core"},
+  {id:"wm_hipopen",group:"Mobility",name:"Hip openers over a box", how:"Foot or shin on the box, rotate the hip out and then in through its full comfortable range.",     sets:"2", reps:"10 each side", load:"bodyweight", musc:"Hip rotators", same:"hip openers"},
+  {id:"wk_latdb",group:"Core",     name:"Lateral banded deadbug", how:"Lie side-on to the band anchor with it over your chest. The obliques stop the band pulling you sideways while the opposite arm and leg lower.",   sets:"3", reps:"8-12 each side",load:"red band",musc:"Deep core, obliques", same:"lateral deadbug"},
+  {id:"wk_bird", group:"Core",     name:"Bird dog", how:"On hands and knees. Reach the opposite arm and leg out level with the body without the hips tipping. Hold a beat, return under control.",                sets:"2", reps:"8 each side",   load:"bodyweight", musc:"Deep core, spinal stability"},
+  {id:"wk_tippy",group:"Core",     name:"Tippy-toe plank", how:"Forearm plank, then lift up onto the tips of the toes. Ribs down, glutes on. You will feel the deep core switch on hard.",         sets:"2", reps:"30 sec",         load:"bodyweight", musc:"Deep core, shoulders"},
+  {id:"wk_dead", group:"Core",     name:"Dead bug", how:"On your back, arms up and knees at 90\\u00b0. Lower one arm and the opposite leg while the lower back stays flat on the floor.",                sets:"2", reps:"10 each side",   load:"bodyweight", musc:"Deep core, anti-extension"},
+  {id:"wk_crunch",group:"Core",    name:"Crunches", how:"Small controlled flexion, chin off the chest, exhale on the way up.",                 sets:"2", reps:"20",            load:"bodyweight", musc:"Abs", same:"crunch"},
+  {id:"wk_hollow",group:"Core",    name:"Hollow hold", how:"On your back, lower back pressed down, shoulders and legs lifted into a shallow banana shape.",             sets:"2", reps:"20 sec",         load:"bodyweight", musc:"Deep core"},
+  {id:"wk_side", group:"Core",     name:"Side plank", how:"On the forearm, body in a straight line, hips stacked and lifted. Don't let the bottom hip sag.",              sets:"2", reps:"20 sec each side",load:"bodyweight",musc:"Obliques, lateral core"},
+  {id:"wk_bridge",group:"Core",    name:"Glute bridge march", how:"Bridge up, hold the hips level, then lift one foot at a time without the pelvis dropping.",      sets:"2", reps:"10 each side",   load:"bodyweight", musc:"Glutes, deep core"},
 
-  {id:"wm_swing",group:"Mobility", name:"Leg swings, front & side",sets:"1", reps:"10 each way", load:"bodyweight", musc:"Hips, hamstrings"},
-  {id:"wm_9090", group:"Mobility", name:"90/90 hip switches",      sets:"1", reps:"8 each side", load:"bodyweight", musc:"Hip rotators"},
-  {id:"wm_wgs",  group:"Mobility", name:"World's greatest stretch",sets:"1", reps:"4 each side", load:"bodyweight", musc:"Hips, T-spine, hamstrings"},
-  {id:"wm_inch", group:"Mobility", name:"Inchworms",               sets:"1", reps:"6",      load:"bodyweight", musc:"Hamstrings, shoulders, core"},
-  {id:"wm_cat",  group:"Mobility", name:"Cat/Cow",                 sets:"1", reps:"5",      load:"bodyweight", musc:"Spine mobility, core"},
-  {id:"wm_glute",group:"Mobility", name:"Glute bridges",           sets:"2", reps:"12",     load:"bodyweight", musc:"Glutes, hamstrings"},
-  {id:"wm_band", group:"Mobility", name:"Banded shoulder pass-throughs", sets:"1", reps:"10", load:"red band", musc:"Shoulders, T-spine"},
-  {id:"wm_arm",  group:"Mobility", name:"Arm circles",             sets:"1", reps:"10 each way", load:"bodyweight", musc:"Shoulders"},
-  {id:"wm_lunge",group:"Mobility", name:"Deep lunge to hamstring stretch", sets:"1", reps:"3/3", load:"bodyweight", musc:"Hamstrings, hip flexors"}
+  {id:"wm_swing",group:"Mobility", name:"Leg swings, front & side", how:"Hold something steady. Relaxed swings, letting the range build over the reps.",sets:"1", reps:"10 each way", load:"bodyweight", musc:"Hips, hamstrings"},
+  {id:"wm_9090", group:"Mobility", name:"90/90 hip switches", how:"Sit with both knees at 90\\u00b0, one in front and one out to the side. Rotate the knees over to the other side without using your hands.",      sets:"1", reps:"8 each side", load:"bodyweight", musc:"Hip rotators"},
+  {id:"wm_wgs",  group:"Mobility", name:"World's greatest stretch", how:"Deep lunge, same-side elbow to the floor inside the front foot, then rotate that arm up to the ceiling.",sets:"1", reps:"4 each side", load:"bodyweight", musc:"Hips, T-spine, hamstrings"},
+  {id:"wm_inch", group:"Mobility", name:"Inchworms", how:"Hinge, walk the hands out to a plank, walk the feet back in. Keep the legs as straight as is comfortable.",               sets:"1", reps:"6",      load:"bodyweight", musc:"Hamstrings, shoulders, core"},
+  {id:"wm_cat",  group:"Mobility", name:"Cat/Cow", how:"On hands and knees, arch and round the spine slowly, breathing with the movement.",                 sets:"1", reps:"5",      load:"bodyweight", musc:"Spine mobility, core"},
+  {id:"wm_glute",group:"Mobility", name:"Glute bridges", how:"Feet flat, drive through the heels, squeeze the glutes at the top. Ribs stay down.",           sets:"2", reps:"12",     load:"bodyweight", musc:"Glutes, hamstrings"},
+  {id:"wm_band", group:"Mobility", name:"Banded shoulder pass-throughs", how:"Wide grip on the band, straight arms, take it from in front of the thighs over the head and behind. Narrow the grip as you loosen up.", sets:"1", reps:"10", load:"red band", musc:"Shoulders, T-spine"},
+  {id:"wm_arm",  group:"Mobility", name:"Arm circles", how:"Small circles building to large, both directions.",             sets:"1", reps:"10 each way", load:"bodyweight", musc:"Shoulders"},
+  {id:"wm_lunge",group:"Mobility", name:"Deep lunge to hamstring stretch", how:"Sink into a long lunge, then shift the hips back and straighten the front leg.", sets:"1", reps:"3/3", load:"bodyweight", musc:"Hamstrings, hip flexors"}
 ];
 
 function moveKey(i){ return ((i && (i.same || i.name)) || "").trim().toLowerCase(); }
@@ -711,23 +802,23 @@ const EX = [
    cue:"Soft elbow, retract the scapula at the back."},
   {id:"f2",  def:"fh", name:"Band Shoulder Rotations", sets:"1", reps:"10", load:"red band", musc:"Rotator cuff, shoulders",
    cue:"Feel for sticky spots, focus the rotation through that area."},
-  {id:"f4",  def:"fh", name:"Deep Lunge to Hamstring Stretch", sets:"1", reps:"3/3", load:"bodyweight", musc:"Hamstrings, hip flexors"},
-  {id:"f5",  def:"fh", name:"Walking Lunges", sets:"3", reps:"5/5", load:"bodyweight", musc:"Quads, glutes, hamstrings"},
-  {id:"f6",  def:"fh", name:"Gravitron Assisted Pull Ups", sets:"1", reps:"12", load:"100 lbs assist", musc:"Lats, biceps"},
-  {id:"f7",  def:"fh", name:"Gravitron Assisted Chin Ups", sets:"1", reps:"12", load:"100 lbs assist", musc:"Biceps, lats"},
-  {id:"f8",  def:"fh", name:"Gravitron Assisted Dips", sets:"1", reps:"12", load:"100 lbs assist", musc:"Triceps, chest"},
-  {id:"f9",  def:"fh", name:"Loaded McGill Curl Ups", sets:"3", reps:"10", load:"10 lbs", musc:"Core (abs, deep stabilizers)"},
-  {id:"f10", def:"fh", name:"Bulgarian Split Squat", sets:"3", reps:"12, hold 3 sec", load:"bodyweight", musc:"Quads, glutes (unilateral)"},
+  {id:"f4",  def:"fh", name:"Deep Lunge to Hamstring Stretch", how:"Step into a long lunge, back knee down. Sink the hips forward, then shift back over the rear leg and straighten the front knee to feel the hamstring. Alternate slowly.", sets:"1", reps:"3/3", load:"bodyweight", musc:"Hamstrings, hip flexors"},
+  {id:"f5",  def:"fh", name:"Walking Lunges", how:"Long step forward, both knees to roughly 90\\u00b0, back knee just off the floor. Drive through the front heel to stand, then step straight into the next one. Chest tall.", sets:"3", reps:"5/5", load:"bodyweight", musc:"Quads, glutes, hamstrings"},
+  {id:"f6",  def:"fh", name:"Gravitron Assisted Pull Ups", how:"Overhand grip wider than shoulders. Kneel or stand on the pad, start from a full hang, pull the elbows down and back until the chin clears the bar, lower all the way. More assist weight = easier.", sets:"1", reps:"12", load:"100 lbs assist", musc:"Lats, biceps"},
+  {id:"f7",  def:"fh", name:"Gravitron Assisted Chin Ups", how:"Same machine, underhand grip about shoulder width. Biceps do more of the work. Keep the shoulders down away from the ears and the ribs stacked.", sets:"1", reps:"12", load:"100 lbs assist", musc:"Biceps, lats"},
+  {id:"f8",  def:"fh", name:"Gravitron Assisted Dips", how:"Grip the parallel bars, elbows tucked back rather than flared. Lower until the upper arms are about parallel to the floor, press back up. Lean slightly forward for chest, upright for triceps.", sets:"1", reps:"12", load:"100 lbs assist", musc:"Triceps, chest"},
+  {id:"f9",  def:"fh", name:"Loaded McGill Curl Ups", how:"Lie on your back, one knee bent and one leg straight. Hands under the lower back to keep its natural arch. Lift only the head and shoulders a couple of inches \\u2014 no spinal flexion, no chin tuck.", sets:"3", reps:"10", load:"10 lbs", musc:"Core (abs, deep stabilizers)"},
+  {id:"f10", def:"fh", name:"Bulgarian Split Squat", how:"Rear foot up on a bench, front foot far enough forward that the knee stays over the mid-foot. Lower straight down, hold the bottom, drive up through the front heel.", sets:"3", reps:"12, hold 3 sec", load:"bodyweight", musc:"Quads, glutes (unilateral)"},
 
   // ---- originally Weight Room ----
-  {id:"r1", def:"wr", name:"Neutral Grip Lat Pulldown", sets:"4", reps:"12", load:"60 lbs", musc:"Lats, biceps"},
-  {id:"r2", def:"wr", name:"Leg Press", sets:"4", reps:"12", load:"110 lbs", musc:"Quads, glutes, hamstrings"},
+  {id:"r1", def:"wr", name:"Neutral Grip Lat Pulldown", how:"Palms facing each other. Sit tall, slight backward lean, pull the handle to the upper chest by driving the elbows down. Control the bar all the way back up.", sets:"4", reps:"12", load:"60 lbs", musc:"Lats, biceps"},
+  {id:"r2", def:"wr", name:"Leg Press", how:"Feet shoulder width, mid-platform. Lower until the knees reach about 90\\u00b0 without the lower back rounding off the pad. Press through the whole foot and stop just short of locking the knees.", sets:"4", reps:"12", load:"90 lbs", musc:"Quads, glutes, hamstrings"},
   {id:"r3", def:"wr", name:"Seated Calf Raise", sets:"3", reps:"12", load:"20 lbs", musc:"Calves", cue:"Last time: didn't like free weights."},
   {id:"r4", def:"wr", name:"Seated Dumbbell Shoulder Press", sets:"3", reps:"12", load:"10 lbs", musc:"Shoulders, triceps", cue:"Try 15 lbs this session."},
   {id:"r5", def:"wr", name:"\u201CRow\u201D Shoulder Ext, cable unilateral, sitting", sets:"3", reps:"12", load:"20 lbs", musc:"Rotator cuff, rear delts",
    cue:"Someshan's app says 2 lbs \u2014 plates don't go under 5, so you run 20."},
-  {id:"r6", def:"wr", name:"Single Arm Bent-Over Dumbbell Row", sets:"4", reps:"12", load:"20 lbs", musc:"Back, biceps, rear delts"},
-  {id:"r7", def:"wr", name:"Olympic Bar Deadlift", sets:"2", reps:"10", load:"bar only", musc:"Hamstrings, glutes, lower back"},
+  {id:"r6", def:"wr", name:"Single Arm Bent-Over Dumbbell Row", how:"One hand and knee on a bench, flat back. Row the dumbbell to the hip, elbow close to the body. Lower under control and let the shoulder blade reach forward at the bottom.", sets:"4", reps:"12", load:"20 lbs", musc:"Back, biceps, rear delts"},
+  {id:"r7", def:"wr", name:"Olympic Bar Deadlift", how:"Bar over mid-foot, hinge at the hips with a flat back. Brace, then push the floor away and stand tall. Lower by pushing the hips back first.", sets:"2", reps:"10", load:"bar only", musc:"Hamstrings, glutes, lower back"},
 
   // ---- Abagael, Workout #2 (August) ----
   {id:"x3", def:"fh", name:"Hip Openers", same:"hip openers", sets:"2", reps:"10 each side", load:"bodyweight",
@@ -780,42 +871,53 @@ const EX = [
 
   {id:"y5", def:"wr", name:"Dual Cable Cross Kickbacks", sets:"3-4", reps:"8-10 each leg", load:"7-10 lbs",
    musc:"Glutes, hamstrings",
-   cue:"Cable arms in, set at about knee height. Opposite ankle to cable, come across and back. Watch the stack: kg on the LEFT, lbs on the RIGHT."},
-
-  {id:"m1", def:"wr", name:"Hip Adductor Machine", sets:"3", reps:"12", load:"50 lbs",
-   musc:"Adductors, hip stability", cue:"Next time try 65 lbs."},
-
-  {id:"n1", def:"wr", name:"Face Pull (dual cable)", sets:"3", reps:"12-15", load:"10 lbs",
-   musc:"Rear delts, rotator cuff, upper back", cue:"Rope at face height, elbows high, pull apart toward the ears."},
-  {id:"n2", def:"wr", name:"Cable External Rotation", sets:"3", reps:"12 each side", load:"5 lbs",
-   musc:"Rotator cuff", cue:"Elbow pinned at your side, slow out, slower back."},
-  {id:"n3", def:"fh", name:"Wall Slides (forearms on wall)", sets:"2", reps:"10", load:"bodyweight",
-   musc:"Serratus, lower traps", cue:"Forearms on the wall, slide up, keep ribs down."},
-  {id:"n4", def:"fh", name:"Prone Y Raise", sets:"2", reps:"8", load:"bodyweight",
-   musc:"Lower traps, rear delts", cue:"Thumbs up, lift from the shoulder blades, no shrugging."},
-  {id:"n5", def:"fh", name:"Chin Tucks", sets:"2", reps:"10, hold 3 sec", load:"bodyweight",
-   musc:"Deep neck flexors", cue:"Slide the head straight back, double chin, no nodding."},
-  {id:"n6", def:"fh", name:"Isometric Neck Holds", sets:"1", reps:"10 sec each direction", load:"hand pressure",
-   musc:"Neck stabilizers", cue:"Press head into hand, front, back, both sides. Light effort, no movement."},
-  {id:"n7", def:"fh", name:"Upper Trap Stretch", sets:"2", reps:"30 sec each side", load:"stretch",
-   musc:"Upper traps, neck", cue:"Ear toward shoulder, opposite arm relaxed down."},
-  {id:"n8", def:"fh", name:"Levator Scapulae Stretch", sets:"2", reps:"30 sec each side", load:"stretch",
-   musc:"Neck, upper back", cue:"Nose toward the armpit, gentle hand weight."}
+   cue:"Cable arms in, set at about knee height. Opposite ankle to cable, come across and back. Watch the stack: kg on the LEFT, lbs on the RIGHT."}
 ];
 
 const SECT = {
-  s3:"Shoulders", f1:"Shoulders", f2:"Shoulders", r4:"Shoulders", r5:"Shoulders", y3:"Shoulders", z1:"Shoulders",
+  s3:"Shoulders", f1:"Shoulders", f2:"Shoulders", r4:"Shoulders", r5:"Shoulders", z1:"Shoulders",
   r1:"Back", r6:"Back", f6:"Back", f7:"Back", z2:"Back",
   f8:"Chest & arms", z4:"Chest & arms",
-  f9:"Core", x4:"Core", x5:"Core", y4:"Core", z5:"Core",
+  f9:"Core", y3:"Core", x4:"Core", x5:"Core", y4:"Core", z5:"Core",
   r2:"Legs", f10:"Legs", f5:"Legs", z3:"Legs", r3:"Legs", x8:"Legs",
   r7:"Posterior chain", y2:"Posterior chain", x7:"Posterior chain",
-  x3:"Glutes & hips", m1:"Glutes & hips", n1:"Shoulders", n2:"Shoulders", n3:"Shoulders", n4:"Shoulders", n5:"Neck", n6:"Neck", n7:"Neck", n8:"Neck", y1:"Glutes & hips", x6:"Glutes & hips", y5:"Glutes & hips", f4:"Glutes & hips"
+  x3:"Glutes & hips", y1:"Glutes & hips", x6:"Glutes & hips", y5:"Glutes & hips", f4:"Glutes & hips"
 };
-const SECT_ORDER = ["Shoulders","Back","Chest & arms","Core","Legs","Posterior chain","Glutes & hips","Neck"];
-function sectOf(i){ return SECT[i.id] || "Other"; }
+const SECT_ORDER = ["Shoulders","Back","Chest & arms","Core","Legs","Posterior chain","Glutes & hips"];
+function sectOf(i){ return i.sect || SECT[i.id] || "Other"; }
 
-const MAX_PICKS = 10;
+const MAX_PICKS = 12;
+
+/* Zones from the Surprise pool map onto the same sections the lifts use. */
+const AREA_TO_SECT = {
+  "Legs":"Legs", "Upper Body":"Back", "Core":"Core",
+  "Mobility/Hip":"Glutes & hips", "Cardio":"Legs"
+};
+
+function workedSections(){
+  const set=Object.create(null);
+  EX.filter(isPicked).forEach(i=>{ set[sectOf(i)]=true; });
+  (state.surprise||[]).forEach(sp=>{
+    const area=sp.area || (String(sp.musc||"").split("\u00b7").pop()||"").trim();
+    const mapped=AREA_TO_SECT[area];
+    if(mapped) set[mapped]=true;
+  });
+  return set;
+}
+
+/* Stretches that match what she trained. With nothing picked yet, show them all
+   rather than an empty cooldown. */
+function coolFor(){
+  const worked=workedSections();
+  const any=Object.keys(worked).length;
+  if(!any) return COOL.slice();
+  const hit=COOL.filter(c=>(c.forSect||[]).some(x=>worked[x]));
+  return hit.length ? hit : COOL.slice();
+}
+function coolRest(){
+  const on=coolFor();
+  return COOL.filter(c=>on.indexOf(c)===-1);
+}
 function picked(){ return state.todayPicks || []; }
 function isPicked(i){ return picked().indexOf(i.id) !== -1; }
 
@@ -823,19 +925,19 @@ function effZone(i){ return (state.zoneOverrides && state.zoneOverrides[i.id]) |
 function roomList(z){ return dedupe(EX.filter(i=>effZone(i)===z && isPicked(i))); }
 
 const COOL = [
-  {id:"c1", name:"Lats / mid-back", sets:"-", reps:"30-45 sec each", load:"stretch",
+  {id:"c1", name:"Lats / mid-back", forSect:["Back"], sets:"-", reps:"30-45 sec each", load:"stretch",
    musc:"Lats, mid-back", cue:"Child's pose with arms reached long, or an overhead lat stretch against a wall."},
-  {id:"c2", name:"Shoulders / rotator cuff", sets:"-", reps:"30 sec each side", load:"stretch",
+  {id:"c2", name:"Shoulders / rotator cuff", forSect:["Shoulders","Chest & arms"], sets:"-", reps:"30 sec each side", load:"stretch",
    musc:"Shoulders, chest", cue:"Cross-body shoulder stretch, then a doorway chest stretch."},
-  {id:"c3", name:"Quads / hip flexors", sets:"-", reps:"30-45 sec each leg", load:"stretch",
+  {id:"c3", name:"Quads / hip flexors", forSect:["Legs","Glutes & hips"], sets:"-", reps:"30-45 sec each leg", load:"stretch",
    musc:"Quads, hip flexors", cue:"Standing or kneeling quad and hip flexor stretch \u2014 couch stretch if you have time."},
-  {id:"c4", name:"Glutes / hamstrings", sets:"-", reps:"30-45 sec each side", load:"stretch",
+  {id:"c4", name:"Glutes / hamstrings", forSect:["Legs","Glutes & hips","Posterior chain"], sets:"-", reps:"30-45 sec each side", load:"stretch",
    musc:"Glutes, hamstrings", cue:"Seated or lying figure-4, then a standing hamstring stretch."},
-  {id:"c5", name:"Calves", sets:"-", reps:"30 sec each leg", load:"stretch",
+  {id:"c5", name:"Calves", forSect:["Legs"], sets:"-", reps:"30 sec each leg", load:"stretch",
    musc:"Calves", cue:"Standing calf stretch against a wall or step."},
-  {id:"c6", name:"Core / obliques", sets:"-", reps:"30 sec each side", load:"stretch",
+  {id:"c6", name:"Core / obliques", forSect:["Core"], sets:"-", reps:"30 sec each side", load:"stretch",
    musc:"Abs, obliques", cue:"Gentle supine spinal twist, both directions."},
-  {id:"c7", name:"Spine / mid-back", sets:"-", reps:"8-10 slow reps", load:"stretch",
+  {id:"c7", name:"Spine / mid-back", forSect:["Back","Posterior chain","Core"], sets:"-", reps:"8-10 slow reps", load:"stretch",
    musc:"Spine mobility", cue:"Cat/Cow, slow through the full range, breathing with it."}
 ];
 
@@ -852,7 +954,7 @@ const DB = [
   {n:"Leg Extension",z:"Legs",s:"2",r:"10",l:"30 lbs",m:"Quads"},
   {n:"Leg Curl",z:"Legs",s:"TBD",r:"TBD",l:"60 lbs",m:"Hamstrings"},
   {n:"Walking Lunges",z:"Legs",s:"3",r:"5/5",l:"bodyweight",m:"Quads, glutes, hamstrings"},
-  {n:"Leg Press",z:"Legs",s:"4",r:"12",l:"110 lbs",m:"Quads, glutes, hamstrings"},
+  {n:"Leg Press",z:"Legs",s:"4",r:"12",l:"90 lbs",m:"Quads, glutes, hamstrings"},
   {n:"Seated Calf Raise",z:"Legs",s:"3",r:"12",l:"20 lbs",m:"Calves"},
   {n:"Trap Bar Deadlift",z:"Legs",s:"TBD",r:"TBD",l:"TBD",m:"Glutes, hamstrings, lower back"},
   {n:"Bulgarian Split Squat",z:"Legs",s:"3",r:"12, hold 3 sec",l:"bodyweight",m:"Quads, glutes (unilateral)"},
@@ -928,16 +1030,18 @@ const LAST = "session513x:last";
 const PICKS = "session513x:picks";
 const SETTINGS = "session513x:settings";
 const FAST = "session513x:fast";
+const CUSTOM = "session513x:custom";
 
 let state = { log:{}, surprise:[], mode:"Balanced Mix", zone:"Random",
               startedAt:"", endedAt:"", startedTs:0, energy:0, review:"",
               warmPicks:["wc_ell","wk_bird","wk_tippy","wm_swing"],  // always a core element in here
               coreSeeded:false,
-              pain:null, painNote:"", zoneOverrides:{}, todayPicks:null };
+              pain:null, painNote:"", zoneOverrides:{}, todayPicks:null, lastActTs:0 };
 let events = [];   // treatments / flare-ups, kept across sessions
 let lasts = {};    // exercise id -> what she actually lifted last time
 let settings = { sound:true };
 let fasting = { startedTs:0, history:[] };
+let customEX = [];   // things she adds herself at the gym
 let index = {};   // date -> lightweight summary, so history never re-reads every session
 let active = "pick";
 let storageOK = true;
@@ -1016,6 +1120,12 @@ async function load(){
   if(rawEvt){ try{ events = JSON.parse(rawEvt) || []; }catch(e){ events = []; } }
   const rawLast = await Store.get(LAST);
   if(rawLast){ try{ lasts = JSON.parse(rawLast) || {}; }catch(e){ lasts = {}; } }
+  const rawCustom = await Store.get(CUSTOM);
+  if(rawCustom){
+    try{ customEX = JSON.parse(rawCustom) || []; }catch(e){ customEX = []; }
+    // merge once, so every existing lookup (rooms, sections, picks, export) just works
+    customEX.forEach(c=>{ if(!EX.some(e=>e.id===c.id)) EX.push(c); });
+  }
   const rawFast = await Store.get(FAST);
   if(rawFast){ try{ fasting = Object.assign(fasting, JSON.parse(rawFast)||{}); }catch(e){} }
   const rawSet = await Store.get(SETTINGS);
@@ -1047,11 +1157,20 @@ function hhmm(d){
 
 /* Stamp the start time the first time she actually does something. */
 function stampStart(){
+  const now=new Date();
   if(!state.startedAt){
-    const now=new Date();
     state.startedAt = hhmm(now);
     state.startedTs = now.getTime();
   }
+  state.lastActTs = now.getTime();   // so a forgotten session can be trimmed back
+}
+
+function shiftHHMM(v, delta){
+  const p2=String(v||"").split(":");
+  if(p2.length<2) return v;
+  let mins = (+p2[0])*60 + (+p2[1]) + delta;
+  mins = ((mins % 1440) + 1440) % 1440;        // wrap across midnight
+  return String(Math.floor(mins/60)).padStart(2,"0")+":"+String(mins%60).padStart(2,"0");
 }
 
 function minutesBetween(a,b){
@@ -1113,6 +1232,7 @@ function save(){
     }
     await Store.set(SETTINGS, JSON.stringify(settings));
     await Store.set(FAST, JSON.stringify(fasting));
+    await Store.set(CUSTOM, JSON.stringify(customEX));
     if(okNow !== storageOK){ storageOK = okNow; }
     if(okNow) setChip("ok","saved "+hhmm(new Date()));
     else setChip("bad","not saving");
@@ -1129,11 +1249,57 @@ function entry(id){
 function trackable(){
   return [
     ...selectedWarm().map(x=>({...x, zone:"warm"})),
-    ...COOL.map(x=>({...x, zone:"cool"})),
+    ...coolFor().map(x=>({...x, zone:"cool"})),
     ...roomList("fh").map(x=>({...x, zone:"fh"})),
     ...roomList("wr").map(x=>({...x, zone:"wr"})),
     ...state.surprise.map(x=>({...x, zone:"surp"}))
   ];
+}
+
+/* ---------------- daily motto ----------------
+   Grounded in actual sport-psych ideas she can use: controllables,
+   process over outcome, attentional focus, self-talk, arousal
+   regulation, imagery, and coming back after a scare. */
+const MOTTOS = [
+  ["Control the controllables.","Your prep, your effort, your attention. The weather, the other riders and the clock are not on that list."],
+  ["Process over outcome.","Chase the rep you can execute right now. The numbers are a by-product, not the target."],
+  ["Fear is information, not a verdict.","It tells you the stakes are real. It doesn't tell you to stop."],
+  ["One pebble at a time.","Nerve isn't a wall you smash through. It's a pile you move a handful at a time."],
+  ["Name it to tame it.","Putting a word to what you feel takes the edge off it. \u201CI'm wired\u201D beats a vague churn."],
+  ["Arousal isn't anxiety.","Same racing heart, two different labels. The one you choose changes the session."],
+  ["Train the boring parts.","Technique holds up under pressure only if it was automatic before the pressure arrived."],
+  ["Talk to yourself like a teammate.","You'd never tell a training partner what you tell yourself on a bad day."],
+  ["Attention is a spotlight.","Point it at one cue \u2014 the heel, the brace, the apex \u2014 not at the whole situation."],
+  ["Rest is part of the programme.","Adaptation happens between sessions, not during them."],
+  ["Confidence follows evidence.","It's built from logged reps, not from pep talks."],
+  ["Compare to last month, not to anyone else.","The only useful baseline is the one with your name on it."],
+  ["Rehearse it before you do it.","Running the movement in your head recruits some of the same wiring as doing it."],
+  ["Showing up tired still counts.","Consistency beats intensity you can't repeat."],
+  ["A bad session is data.","Log what went sideways. That's how the next one goes better."],
+  ["Reset between sets.","One long breath out is a real technique, not a stalling tactic."],
+  ["Effort is yours. Results are borrowed.","Give what you can today and let the rest arrive on its own schedule."],
+  ["Hard is not the same as wrong.","Discomfort in the right tissue is the job. Pain in a joint is a message."],
+  ["Small and often beats big and rare.","Three honest sessions a week will outrun one heroic one."],
+  ["You don't have to feel ready.","Readiness usually shows up a few minutes after you start."],
+  ["Skill is built at the edge of control.","Just past easy, well short of chaos. That's where the learning lives."],
+  ["Your body keeps the receipts.","Sleep, food and water show up in the numbers whether you log them or not."],
+  ["Courage is wanting to go back.","Not the absence of nerves \u2014 the decision made alongside them."],
+  ["Finish the rep you started.","Clean completion teaches the pattern. Bailing teaches bailing."],
+  ["Asymmetry is information.","The weaker side is telling you where the next gain is hiding."],
+  ["Don't negotiate at 5am.","Decide the night before, then just execute the decision."],
+  ["Breathe out on the hard part.","It stabilises the trunk and keeps the pressure honest."],
+  ["Progress is rarely linear.","Plateaus are where the adaptation catches up to the work."],
+  ["Own the warm-up.","It's not the tax before training. It's the first rep of it."],
+  ["Be specific about why.","\u201CGet fitter\u201D fades by February. \u201CHold my line out of turn five\u201D doesn't."],
+  ["Quality first, then quantity.","Add reps once the pattern holds, never before."],
+  ["You can restart any time.","A missed week is a gap, not a verdict on the project."]
+];
+
+function mottoOfDay(){
+  // same all day, different tomorrow
+  const d=new Date(iso+"T00:00:00");
+  const day=Math.floor(d.getTime()/86400000);
+  return MOTTOS[((day % MOTTOS.length) + MOTTOS.length) % MOTTOS.length];
 }
 
 /* ---------------- noise ---------------- */
@@ -1294,24 +1460,43 @@ elSession.onclick=()=>{
   save(); render();
 };
 
-let restIv=null, restBtn=null;
-function runRest(btn, secs){
-  if(restIv){ clearInterval(restIv); if(restBtn){ restBtn.classList.remove("running"); restBtn.textContent=restBtn.dataset.label; } }
-  if(restBtn===btn && restIv){ restIv=null; restBtn=null; return; }   // tapping the running one cancels it
-  restBtn=btn; btn.classList.add("running");
-  let t=secs;
-  const tick=()=>{
-    btn.textContent = t>0 ? (t>=60 ? Math.floor(t/60)+":"+String(t%60).padStart(2,"0") : t+"s") : "Go";
-    if(t<=0){
-      clearInterval(restIv); restIv=null;
-      if(navigator.vibrate) { try{ navigator.vibrate([120,60,120]); }catch(e){} }
-      setTimeout(()=>{ btn.classList.remove("running"); btn.textContent=btn.dataset.label; restBtn=null; }, 1600);
-    }
-    t--;
-  };
-  tick();
-  restIv=setInterval(tick,1000);
+let restIv=null, restBtn=null, restEndTs=0;
+
+function paintRest(){
+  if(!restBtn) return;
+  const left = Math.ceil((restEndTs - Date.now())/1000);
+  if(left > 0){
+    restBtn.textContent = left>=60 ? Math.floor(left/60)+":"+String(left%60).padStart(2,"0") : left+"s";
+    return;
+  }
+  restBtn.textContent = "Go";
+  if(restIv){ clearInterval(restIv); restIv=null; }
+  if(navigator.vibrate){ try{ navigator.vibrate([120,60,120]); }catch(e){} }
+  makeNoise("tick");
+  const done = restBtn;
+  restBtn = null; restEndTs = 0;
+  setTimeout(()=>{ done.classList.remove("running"); done.textContent = done.dataset.label; }, 1600);
 }
+
+function clearRest(){
+  if(restIv){ clearInterval(restIv); restIv=null; }
+  if(restBtn){ restBtn.classList.remove("running"); restBtn.textContent = restBtn.dataset.label; }
+  restBtn = null; restEndTs = 0;
+}
+
+function runRest(btn, secs){
+  if(restBtn === btn){ clearRest(); return; }   // tapping the running one cancels it
+  clearRest();
+  restBtn = btn; btn.classList.add("running");
+  restEndTs = Date.now() + secs*1000;
+  paintRest();
+  restIv = setInterval(paintRest, 250);
+}
+
+/* Coming back from a locked screen: repaint immediately rather than
+   waiting for the next tick. */
+document.addEventListener("visibilitychange", ()=>{ if(!document.hidden) paintRest(); });
+
 elRest30.dataset.label="30s"; elRest60.dataset.label="1 min";
 elSound.onclick=()=>{
   settings.sound = !settings.sound;
@@ -1441,6 +1626,12 @@ function rowEl(item){
       '<div class="field"><label>Weight used</label><input inputmode="text" data-k="weight"></div>'+
     '</div>'+
     '<textarea data-k="note" placeholder="How did it feel?"></textarea>'+
+    ((item.how || item.cue) ?
+      '<details class="howto"><summary>How to do it</summary>'+
+        (item.how ? '<p class="how-mine"></p>' : '')+
+        (item.cue ? '<p class="how-coach"></p>' : '')+
+        '<a class="how-link" target="_blank" rel="noopener">Look up a demo \u2192</a>'+
+      '</details>' : '')+
     '<button class="rest" type="button">Rest 30s</button>'+
     (item.def ? '<div class="zoneswitch"><label>Where</label>'+
        '<button type="button" data-z="fh">Field House</button>'+
@@ -1454,6 +1645,17 @@ function rowEl(item){
     if(k==="weight") inp.placeholder=workingLoad||"";
     inp.oninput=()=>{ stampStart(); e[k]=inp.value; save(); renderHead(); };
   });
+
+  const ht=dr.querySelector(".howto");
+  if(ht){
+    if(item.how) ht.querySelector(".how-mine").textContent = item.how;
+    if(item.cue) ht.querySelector(".how-coach").textContent = "Coach: " + item.cue;
+    /* DuckDuckGo video search rather than YouTube: no Google account in the
+       loop and the results page itself stays clean. */
+    ht.querySelector(".how-link").href =
+      "https://duckduckgo.com/?ia=videos&iax=videos&q=" +
+      encodeURIComponent("how to " + item.name + " exercise form");
+  }
 
   const zs=dr.querySelector(".zoneswitch");
   if(zs){
@@ -1628,6 +1830,16 @@ function render(){
   }
 
   if(active==="pick"){
+    if(!settings.mottoOff){
+      const m=mottoOfDay();
+      const mb=document.createElement("div"); mb.className="motto";
+      mb.innerHTML='<b></b><span></span><button type="button" class="motto-x" aria-label="Hide the daily note">\u00d7</button>';
+      mb.querySelector("b").textContent=m[0];
+      mb.querySelector("span").textContent=m[1];
+      mb.querySelector(".motto-x").onclick=()=>{ settings.mottoOff=true; save(); render(); };
+      main.appendChild(mb);
+    }
+
     const n=picked().length;
     const bar=document.createElement("div"); bar.className="pickbar"+(n>=MAX_PICKS?" full":"");
     bar.innerHTML='<b></b><span></span>';
@@ -1662,7 +1874,7 @@ function render(){
           const p2=picked().slice();
           const at=p2.indexOf(i.id);
           if(at===-1){
-            if(p2.length>=MAX_PICKS){ toast("That's 10 already. Drop one first."); return; }
+            if(p2.length>=MAX_PICKS){ toast("That's 12 already. Drop one first."); return; }
             p2.push(i.id);
           } else { p2.splice(at,1); }
           state.todayPicks=p2; save(); render();
@@ -1671,6 +1883,77 @@ function render(){
       });
       main.appendChild(wrap);
     });
+
+    const addHdr=document.createElement("div"); addHdr.className="grouplab";
+    addHdr.textContent="Your own";
+    main.appendChild(addHdr);
+
+    const af=document.createElement("div"); af.className="addex";
+    af.innerHTML =
+      '<input type="text" id="cxName" placeholder="Exercise name">'+
+      '<div class="addex-row">'+
+        '<input type="text" id="cxSets" placeholder="Sets" inputmode="numeric">'+
+        '<input type="text" id="cxReps" placeholder="Reps">'+
+        '<input type="text" id="cxLoad" placeholder="Weight">'+
+      '</div>'+
+      '<div class="addex-row">'+
+        '<select id="cxSect"></select>'+
+        '<select id="cxRoom">'+
+          '<option value="fh">Field House</option><option value="wr">Weight Room</option>'+
+        '</select>'+
+      '</div>'+
+      '<button type="button" id="cxAdd">Add to my list</button>';
+    main.appendChild(af);
+    const sel=af.querySelector("#cxSect");
+    const ph=document.createElement("option");
+    ph.value=""; ph.textContent="Body area\u2026"; ph.disabled=true; ph.selected=true;
+    sel.appendChild(ph);
+    SECT_ORDER.forEach(x=>{ const o=document.createElement("option"); o.value=x; o.textContent=x; sel.appendChild(o); });
+
+    af.querySelector("#cxAdd").onclick=()=>{
+      const nm=(af.querySelector("#cxName").value||"").trim();
+      if(!nm){ toast("Give it a name first."); return; }
+      if(EX.some(e=>e.name.toLowerCase()===nm.toLowerCase())){ toast("You already have that one."); return; }
+      if(!sel.value){ toast("Pick a body area so the stretches match."); return; }
+      const item={
+        id:"u"+Date.now(),
+        name:nm,
+        sets:(af.querySelector("#cxSets").value||"").trim() || "-",
+        reps:(af.querySelector("#cxReps").value||"").trim() || "-",
+        load:(af.querySelector("#cxLoad").value||"").trim() || "bodyweight",
+        sect:sel.value,
+        def:af.querySelector("#cxRoom").value,
+        musc:sel.value,
+        mine:true
+      };
+      customEX.push(item); EX.push(item);
+      const p2=picked().slice();
+      if(p2.length < MAX_PICKS){ p2.push(item.id); state.todayPicks=p2; }
+      save(); render();
+      toast(nm + " added" + (p2.indexOf(item.id)>-1 ? " and picked for today." : "."));
+    };
+
+    if(customEX.length){
+      const ml=document.createElement("div"); ml.className="minelist";
+      customEX.slice().reverse().forEach(c=>{
+        const r=document.createElement("div"); r.className="minerow";
+        r.innerHTML='<span></span><button type="button" aria-label="Remove">\u00d7</button>';
+        r.querySelector("span").textContent=c.name+"  \u00b7  "+c.sect;
+        r.querySelector("button").onclick=()=>{
+          const ci=customEX.findIndex(x=>x.id===c.id);
+          if(ci>-1) customEX.splice(ci,1);
+          const ei=EX.findIndex(x=>x.id===c.id);
+          if(ei>-1) EX.splice(ei,1);
+          const pi=picked().indexOf(c.id);
+          if(pi>-1){ const p3=picked().slice(); p3.splice(pi,1); state.todayPicks=p3; }
+          delete state.log[c.id];
+          save(); render();
+          toast(c.name+" removed.");
+        };
+        ml.appendChild(r);
+      });
+      main.appendChild(ml);
+    }
   }
 
   if(active==="body"){
@@ -1815,15 +2098,58 @@ function render(){
     const times=document.createElement("div");
     times.className="revtimes";
     times.innerHTML =
-      '<div class="field"><label>Start</label><input type="time" id="tStart"></div>'+
-      '<div class="field"><label>End</label><input type="time" id="tEnd"></div>'+
-      '<div class="field"><label>Duration</label><div class="dur" id="durOut"></div></div>';
+      '<div class="field"><label>Start</label><input type="time" id="tStart">'+
+        '<div class="nudge-row" data-for="start">'+
+          '<button type="button" data-m="-5">\u22125</button><button type="button" data-m="-1">\u22121</button>'+
+          '<button type="button" data-m="1">+1</button><button type="button" data-m="5">+5</button>'+
+        '</div></div>'+
+      '<div class="field"><label>End</label><input type="time" id="tEnd">'+
+        '<div class="nudge-row" data-for="end">'+
+          '<button type="button" data-m="-5">\u22125</button><button type="button" data-m="-1">\u22121</button>'+
+          '<button type="button" data-m="1">+1</button><button type="button" data-m="5">+5</button>'+
+        '</div></div>';
     main.appendChild(times);
+
+    const durLine=document.createElement("div");
+    durLine.className="durline";
+    durLine.innerHTML='<label>Duration</label><div class="dur" id="durOut"></div>';
+    main.appendChild(durLine);
+
     const tS=times.querySelector("#tStart"), tE=times.querySelector("#tEnd");
     tS.value=state.startedAt||""; tE.value=state.endedAt||"";
-    times.querySelector("#durOut").textContent=durationText();
+    durLine.querySelector("#durOut").textContent=durationText();
     tS.onchange=()=>{ state.startedAt=tS.value; save(); render(); };
     tE.onchange=()=>{ state.endedAt=tE.value; save(); render(); };
+
+    /* The wheel picker is fiddly for a one-minute correction, so these shift
+       the time without opening it. Empty field starts from now. */
+    times.querySelectorAll(".nudge-row").forEach(nr=>{
+      const which=nr.dataset.for;
+      nr.querySelectorAll("button").forEach(btn=>{
+        btn.onclick=()=>{
+          const cur = which==="start" ? state.startedAt : state.endedAt;
+          const base = cur || hhmm(new Date());
+          const next = shiftHHMM(base, Number(btn.dataset.m));
+          if(which==="start") state.startedAt = next; else state.endedAt = next;
+          save(); render();
+        };
+      });
+    });
+
+    /* Forgot to stop? Offer the last time she actually logged something,
+       rather than letting the clock run all night. */
+    if(state.startedAt && !state.endedAt && state.lastActTs){
+      const idleMin = Math.floor((Date.now() - state.lastActTs)/60000);
+      if(idleMin >= 45){
+        const at = hhmm(new Date(state.lastActTs));
+        const fix=document.createElement("button");
+        fix.className="fixend"; fix.type="button";
+        fix.innerHTML='<b>Still running since '+state.startedAt+'</b>'+
+                      '<span>Last thing you logged was '+at+'. Tap to end it there.</span>';
+        fix.onclick=()=>{ state.endedAt=at; save(); render(); toast("Ended at "+at+"."); };
+        main.appendChild(fix);
+      }
+    }
 
     const endBtn=document.createElement("button");
     endBtn.className="roll"; endBtn.type="button";
@@ -1892,7 +2218,23 @@ function render(){
   }
 
   if(active==="cool"){
-    COOL.forEach(i=>main.appendChild(rowEl(i)));
+    const on=coolFor(), rest=coolRest();
+    const worked=Object.keys(workedSections());
+    if(worked.length){
+      const wl=document.createElement("div"); wl.className="worked";
+      wl.textContent="Matched to today: "+worked.join(", ");
+      main.appendChild(wl);
+    }
+    on.forEach(i=>main.appendChild(rowEl(i)));
+    if(rest.length){
+      const gl=document.createElement("div"); gl.className="grouplab";
+      gl.textContent="Not worked today";
+      main.appendChild(gl);
+      rest.forEach(i=>{
+        const r=rowEl(i); r.classList.add("offday");
+        main.appendChild(r);
+      });
+    }
   }
 
   updateFootNote();
@@ -1998,7 +2340,7 @@ async function buildPayload(){
     const raw=await Store.get("session513x:"+dt);
     if(raw){ try{ sessions[dt]=JSON.parse(raw); }catch(e){} }
   }
-  return { app:"session513x", version:3, exported:iso, index:index, sessions:sessions, events:events, lasts:lasts, fasting:fasting };
+  return { app:"session513x", version:3, exported:iso, index:index, sessions:sessions, events:events, lasts:lasts, fasting:fasting, customEX:customEX };
 }
 
 /* Merge an incoming payload rather than clobbering: newer wins per session,
@@ -2014,9 +2356,17 @@ async function applyPayload(incoming){
     index = Object.assign({}, index, incoming.index||{});
     await Store.set(IDX, JSON.stringify(index));
     if(Array.isArray(incoming.events)){ events = incoming.events; await Store.set(EVT, JSON.stringify(events)); }
+    if(Array.isArray(incoming.customEX)){
+      incoming.customEX.forEach(c=>{
+        if(!customEX.some(x=>x.id===c.id)) customEX.push(c);
+        if(!EX.some(x=>x.id===c.id)) EX.push(c);
+      });
+      await Store.set(CUSTOM, JSON.stringify(customEX));
+    }
     if(incoming.fasting && typeof incoming.fasting==="object"){
       fasting = Object.assign({startedTs:0,history:[]}, incoming.fasting);
       await Store.set(FAST, JSON.stringify(fasting));
+    await Store.set(CUSTOM, JSON.stringify(customEX));
     }
     if(incoming.lasts && typeof incoming.lasts==="object"){
       Object.keys(incoming.lasts).forEach(k=>{
@@ -2029,6 +2379,7 @@ async function applyPayload(incoming){
     }
     await Store.set(SETTINGS, JSON.stringify(settings));
     await Store.set(FAST, JSON.stringify(fasting));
+    await Store.set(CUSTOM, JSON.stringify(customEX));
     }
     const mine=incoming.sessions[iso];
     if(mine) state=Object.assign({log:{},surprise:[],mode:"Balanced Mix",zone:"Random",
@@ -2117,6 +2468,14 @@ window.addEventListener("beforeunload", e=>{
 document.getElementById("finaleClose").onclick=()=>{
   document.getElementById("finale").classList.remove("show");
 };
+
+/* Offline support. If sw.js isn't uploaded this fails quietly and the app
+   behaves exactly as before, so a half-finished upload can't break anything. */
+if("serviceWorker" in navigator && window.isSecureContext){
+  window.addEventListener("load", ()=>{
+    navigator.serviceWorker.register("./sw.js").catch(()=>{});
+  });
+}
 
 (async ()=>{
   const warn = document.getElementById("jsWarn");
