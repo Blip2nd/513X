@@ -725,7 +725,7 @@ textarea{
 
 const ZONES = [
   {id:"pick",  label:"Pick", short:"Pick",           title:"Build today",
-   sub:"Choose up to 12. Tomorrow starts with whatever you pick today.", session:"Pick"},
+   sub:"Choose up to 10. Tomorrow starts with whatever you pick today.", session:"Pick"},
   {id:"warm",  label:"Warm-up", short:"Warm",       title:"Warm-up",
    sub:"Pick what you feel like today. Tap to add or drop anything.", session:"Warm-up"},
   {id:"fh",    label:"Field House", short:"Field House", title:"Field House",
@@ -886,7 +886,7 @@ const SECT = {
 const SECT_ORDER = ["Shoulders","Back","Chest & arms","Core","Legs","Posterior chain","Glutes & hips"];
 function sectOf(i){ return i.sect || SECT[i.id] || "Other"; }
 
-const MAX_PICKS = 12;
+const MAX_PICKS = 10;
 
 /* Zones from the Surprise pool map onto the same sections the lifts use. */
 const AREA_TO_SECT = {
@@ -1139,6 +1139,10 @@ async function load(){
     if(rawPicks){ try{ seed = JSON.parse(rawPicks) || []; }catch(e){ seed = []; } }
     seed = seed.filter(id=>EX.some(x=>x.id===id)).slice(0, MAX_PICKS);
     state.todayPicks = seed;
+  } else if(state.todayPicks.length > MAX_PICKS){
+    // the cap came down since this session was built; trim rather than
+    // show a nonsense count like 12 / 10
+    state.todayPicks = state.todayPicks.slice(0, MAX_PICKS);
   }
 
   // she asked for a core element in every warm-up: seed one the first time only,
@@ -1874,7 +1878,7 @@ function render(){
           const p2=picked().slice();
           const at=p2.indexOf(i.id);
           if(at===-1){
-            if(p2.length>=MAX_PICKS){ toast("That's 12 already. Drop one first."); return; }
+            if(p2.length>=MAX_PICKS){ toast("That's 10 already. Drop one first."); return; }
             p2.push(i.id);
           } else { p2.splice(at,1); }
           state.todayPicks=p2; save(); render();
