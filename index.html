@@ -744,6 +744,8 @@ const ZONES = [
 
 /* Warm-up is now a menu she picks from, not a fixed list. */
 const WARM_LIB = [
+  {id:"wc_jog",  group:"Cardio",   name:"Jog",                     sets:"1", reps:"10-15 min", load:"easy pace", musc:"Full body, cardio",
+   how:"Easy conversational pace. Outside or on the treadmill \u2014 the point is to raise the temperature, not to train."},
   {id:"wc_ell",  group:"Cardio",   name:"Elliptical", how:"Easy conversational pace. You should be able to talk the whole time.",              sets:"1", reps:"15 min", load:"easy pace", musc:"Full body, cardio"},
   {id:"wc_row",  group:"Cardio",   name:"Rower", how:"Legs, then back, then arms on the drive. Reverse that order on the recovery.",                   sets:"1", reps:"10 min", load:"steady",    musc:"Back, legs, cardio"},
   {id:"wc_bike", group:"Cardio",   name:"Spin bike", how:"Light resistance, smooth cadence. Enough to warm up, not to tire the legs.",               sets:"1", reps:"12 min", load:"easy pace", musc:"Quads, cardio"},
@@ -849,6 +851,23 @@ const EX = [
   {id:"y4", def:"wr", name:"Cable Core Curls", sets:"3", reps:"8-10", load:"80-95 lbs",
    musc:"Abs, deep core",
    cue:"Row attachment, use a knee pad. Inhale and brace on the crunch, elbows to the outside of the knee, exhale up."},
+  // ---- Abagael, November \u2014 leg machines and the sled ----
+  {id:"n1", def:"wr", name:"Prone Leg Curl", sets:"TBD", reps:"TBD", load:"45 lbs",
+   musc:"Hamstrings",
+   how:"Lie face down on the combo machine, roller pad just above the heels, hips flat on the bench. Curl the heels toward the glutes, squeeze, then lower slowly. Don't let the hips lift."},
+  {id:"n2", def:"wr", name:"Seated Leg Curl", sets:"TBD", reps:"TBD", load:"TBD",
+   musc:"Hamstrings",
+   how:"Same machine, seated. Back against the pad, roller just above the heels, thigh pad snug. Drive the heels down and under, pause, return under control."},
+  {id:"n3", def:"wr", name:"Seated Leg Extension", sets:"TBD", reps:"TBD", load:"45 lbs",
+   musc:"Quadriceps",
+   how:"Atlantis LEGS machine. Adjust the backrest and roller pad, sit with your feet behind the roller and hold the side handles. Fully extend the legs, then return slowly \u2014 the lowering half is where the quad does its work."},
+  {id:"n4", def:"fh", name:"Sled Rope Pull", sets:"TBD", reps:"pull across, walk back", load:"50 lbs (2 \u00d7 25)",
+   musc:"Lats, biceps, core, grip \u2014 legs on the walk back",
+   how:"Rope wrapped around the upright. Pull the sled the length of the Field House hand over hand \u2014 stay low, elbows driving past the ribs, core tight so it comes from the back and not the lower spine. Then walk it back powerfully on the rope."},
+  {id:"n5", def:"fh", name:"Sled Push", sets:"TBD", reps:"walk across, run back", load:"50 lbs (2 \u00d7 25)",
+   musc:"Quads, glutes, calves, conditioning",
+   how:"Hands high on the uprights, arms locked, body at a low forward angle. Walk it the length of the Field House, then run it back to the start. Short powerful steps through the whole foot \u2014 keep it moving rather than lurching."},
+
   // ---- Abagael, Workout #4 (September) ----
   {id:"s3", def:"fh", name:"Banded Protraction Control (Serratus Punch)", sets:"-", reps:"8 each side", load:"light band",
    musc:"Serratus anterior, shoulder stability",
@@ -876,10 +895,10 @@ const EX = [
 
 const SECT = {
   s3:"Shoulders", f1:"Shoulders", f2:"Shoulders", r4:"Shoulders", r5:"Shoulders", z1:"Shoulders",
-  r1:"Back", r6:"Back", f6:"Back", f7:"Back", z2:"Back",
+  r1:"Back", n4:"Back", r6:"Back", f6:"Back", f7:"Back", z2:"Back",
   f8:"Chest & arms", z4:"Chest & arms",
   f9:"Core", y3:"Core", x4:"Core", x5:"Core", y4:"Core", z5:"Core",
-  r2:"Legs", f10:"Legs", f5:"Legs", z3:"Legs", r3:"Legs", x8:"Legs",
+  r2:"Legs", n1:"Legs", n2:"Legs", n3:"Legs", n5:"Legs", f10:"Legs", f5:"Legs", z3:"Legs", r3:"Legs", x8:"Legs",
   r7:"Posterior chain", y2:"Posterior chain", x7:"Posterior chain",
   x3:"Glutes & hips", y1:"Glutes & hips", x6:"Glutes & hips", y5:"Glutes & hips", f4:"Glutes & hips"
 };
@@ -944,6 +963,11 @@ const COOL = [
 /* Full exercise database for Surprise me — mirrors the workbook */
 const DB = [
   {n:"Sked (sled push/pull)",z:"Cardio",s:"2",r:"8-10",l:"25 lbs",m:"Quads, glutes, cardio"},
+  {n:"Jog",z:"Cardio",s:"1",r:"10-15 min",l:"easy pace",m:"Full body, cardio"},
+  {n:"Sled Rope Pull",z:"Upper Body",s:"TBD",r:"pull across, walk back",l:"50 lbs (2 \u00d7 25)",m:"Lats, biceps, core, grip"},
+  {n:"Sled Push",z:"Legs",s:"TBD",r:"walk across, run back",l:"50 lbs (2 \u00d7 25)",m:"Quads, glutes, conditioning"},
+  {n:"Prone Leg Curl",z:"Legs",s:"TBD",r:"TBD",l:"45 lbs",m:"Hamstrings"},
+  {n:"Seated Leg Extension",z:"Legs",s:"TBD",r:"TBD",l:"45 lbs",m:"Quadriceps"},
   {n:"Elliptical",z:"Cardio",s:"1",r:"15 min",l:"easy pace",m:"Full body, cardio"},
   {n:"Spin Bike (standing)",z:"Cardio",s:"3",r:"30 sec",l:"standing",m:"Quads, calves, cardio"},
   {n:"Swings (kettlebell)",z:"Cardio",s:"3",r:"30 sec",l:"12 lbs",m:"Glutes, hamstrings, core"},
@@ -1580,7 +1604,8 @@ function rowEl(item){
   const workingSets = (L && L.sets) ? L.sets : item.sets;
   const workingReps = (L && L.reps) ? L.reps : item.reps;
   const presc = (item.presc && !(L && L.weight)) ? item.presc
-    : [workingSets && workingSets!=="–" && workingSets!=="-" ? workingSets+"×"+workingReps : workingReps,
+    : [(workingSets && workingSets!=="–" && workingSets!=="-" && workingSets!=="TBD")
+         ? workingSets+"×"+workingReps : workingReps,
        workingLoad].filter(Boolean).join(" · ");
 
   const top=document.createElement("div"); top.className="rowtop";
